@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            $table->string('type'); // shipping or billing
+            $table->string('type'); // SHIPPING OR BILLING
             $table->string('full_name');
             $table->string('phone', 32);
             $table->string('line1');

@@ -5,34 +5,61 @@
     <h1 style="font-family:'Cooper Black', serif; color:#4A2C2A;">Orders</h1>
 </div>
 
-<table style="width:100%; border-collapse:collapse; font-family:'Poppins', sans-serif;">
-    <thead>
-        <tr style="text-align:left; border-bottom:1px solid #eee;">
-            <th>ID</th>
-            <th>Status</th>
-            <th>Total</th>
-            <th>Customer</th>
-            <th>Placed</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @forelse($orders as $o)
-        <tr style="border-bottom:1px solid #f3f3f3;">
-            <td>{{ $o->id }}</td>
-            <td>{{ ucfirst($o->status) }}</td>
-            <td>₱{{ number_format($o->total, 2) }}</td>
-            <td>{{ $o->user->name ?? 'Guest' }}</td>
-            <td>{{ $o->placed_at?->format('Y-m-d H:i') }}</td>
-            <td><a href="{{ route('admin.orders.show', $o) }}">View</a></td>
-        </tr>
-        @empty
-        <tr><td colspan="6">No orders yet.</td></tr>
-        @endforelse
-    </tbody>
-</table>
+@if(session('success'))
+    <div style="background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:12px 16px; border-radius:8px; margin-bottom:20px;">
+        {{ session('success') }}
+    </div>
+@endif
 
-<div style="margin-top:16px;">
+<div style="background:white; border-radius:12px; overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse; font-family:'Poppins', sans-serif;">
+        <thead>
+            <tr style="text-align:left; border-bottom:2px solid #eee; background:#FAFAFA;">
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">ID</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Status</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Total</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Customer</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $badgeColors = [
+                    'pending' => 'background:#FFF4E5; color:#D48806;',
+                    'processing' => 'background:#E6F7FF; color:#1890FF;',
+                    'completed' => 'background:#E6FFFB; color:#08979C;',
+                    'cancelled' => 'background:#FFF1F0; color:#CF1322;',
+                ];
+            @endphp
+            @forelse($orders as $o)
+            <tr style="border-bottom:1px solid #f3f3f3;" onmouseover="this.style.background='#FDF9F0'" onmouseout="this.style.background='white'">
+                <td style="padding:16px 12px; font-weight:700;">#{{ $o->id }}</td>
+                <td style="padding:16px 12px;">
+                    <span style="{{ $badgeColors[$o->status] ?? '' }} padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;">
+                        {{ ucfirst($o->status) }}
+                    </span>
+                </td>
+                <td style="padding:16px 12px; font-weight:600;">₱{{ number_format($o->total, 2) }}</td>
+                <td style="padding:16px 12px;">{{ $o->user->name ?? 'Guest' }}</td>
+                <td style="padding:16px 12px;">{{ $o->items->count() }} item(s)</td>
+                <td style="padding:16px 12px; color:#666;">{{ $o->placed_at?->format('M d, Y') }}</td>
+                <td style="padding:16px 12px;">
+                    <a href="{{ route('admin.orders.show', $o) }}" 
+                       style="background:#4A2C2A; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:500;">
+                        View
+                    </a>
+                </td>
+            </tr>
+            @empty
+            <tr><td colspan="7" style="padding:40px; text-align:center; color:#999;">No orders yet.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:20px;">
     {{ $orders->links() }}
 </div>
 @endsection

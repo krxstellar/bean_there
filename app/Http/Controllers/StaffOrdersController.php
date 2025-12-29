@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Models\Address;
 use Illuminate\Http\Request;
 
-class AdminOrdersController extends Controller
+class StaffOrdersController extends Controller
 {
     public const STATUSES = ['pending', 'processing', 'completed', 'cancelled'];
 
@@ -16,7 +16,10 @@ class AdminOrdersController extends Controller
             ->orderByDesc('id')
             ->paginate(20);
 
-        return view('admin.orders.index', compact('orders'));
+        return view('staff.orders', [
+            'orders' => $orders,
+            'statuses' => self::STATUSES,
+        ]);
     }
 
     public function show(Order $order)
@@ -26,7 +29,7 @@ class AdminOrdersController extends Controller
             ->where('type', 'shipping')
             ->first();
 
-        return view('admin.orders.show', [
+        return view('staff.order-show', [
             'order' => $order,
             'shipping' => $shipping,
             'statuses' => self::STATUSES,

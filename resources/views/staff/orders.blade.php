@@ -1,43 +1,94 @@
 @extends('layouts.staff')
 
 @section('staff-content')
-    <h1 style="font-family: 'Cooper Black', serif; font-size: 2.5rem; color: #4A2C2A; margin-bottom: 25px;">Order Management</h1>
-
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; font-family: 'Poppins';">
-        <button style="background: white; border: 1px solid #EEE; padding: 8px 15px; border-radius: 10px;">Type <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></button>
-        <button style="background: white; border: 1px solid #EEE; padding: 8px 15px; border-radius: 10px;">Status <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></button>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <div>
+        <h1 style="font-family:'Cooper Black', serif; color:#4A2C2A; margin:0;">Orders</h1>
+        <p style="color:#888; margin:5px 0 0;">Process and manage customer orders</p>
     </div>
+</div>
 
-    <div style="background: white; border-radius: 20px; overflow: hidden; font-family: 'Poppins'; border: 1px solid #F0F2F5;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead style="background: #FAFAFA; color: #B07051; font-size: 12px; text-transform: uppercase;">
-                <tr>
-                    <th style="padding: 20px;">Order No.</th>
-                    <th style="padding: 20px;">Customer</th>
-                    <th style="padding: 20px;">Product</th>
-                    <th style="padding: 20px;">Current Status</th>
-                    <th style="padding: 20px;">Update Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="border-bottom: 1px solid #F0F2F5;">
-                    <td style="padding: 20px; font-weight: 700;">#0012</td>
-                    <td style="padding: 20px;">Juan Dela Cruz</td>
-                    <td style="padding: 20px;">Classic Ensaymada (6)</td>
-                    <td style="padding: 20px;">
-                        <span style="background: rgba(176, 112, 81, 0.1); color: #B07051; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">PREPARING</span>
-                    </td>
-                    <td style="padding: 20px;">
-                        <select onchange="alert('Status updated to: ' + this.value)" style="padding: 8px; border-radius: 8px; border: 1px solid #B07051; font-family: 'Poppins'; font-size: 12px; color: #4A2C2A; outline: none; cursor: pointer;">
-                            <option value="" disabled selected>Update Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Preparing">Preparing</option>
-                            <option value="Ready">Ready</option>
-                            <option value="Delivered">Delivered</option>
-                        </select>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+@if(session('success'))
+    <div style="background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:12px 16px; border-radius:8px; margin-bottom:20px;">
+        {{ session('success') }}
     </div>
+@endif
+
+{{-- Quick Stats --}}
+<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:24px;">
+    @php
+        $pending = $orders->where('status', 'pending')->count();
+        $processing = $orders->where('status', 'processing')->count();
+        $completed = $orders->where('status', 'completed')->count();
+        $cancelled = $orders->where('status', 'cancelled')->count();
+    @endphp
+    <div style="background:#FFF4E5; padding:20px; border-radius:12px; text-align:center;">
+        <div style="font-size:28px; font-weight:700; color:#D48806;">{{ $pending }}</div>
+        <div style="color:#D48806; font-size:13px;">Pending</div>
+    </div>
+    <div style="background:#E6F7FF; padding:20px; border-radius:12px; text-align:center;">
+        <div style="font-size:28px; font-weight:700; color:#1890FF;">{{ $processing }}</div>
+        <div style="color:#1890FF; font-size:13px;">Processing</div>
+    </div>
+    <div style="background:#E6FFFB; padding:20px; border-radius:12px; text-align:center;">
+        <div style="font-size:28px; font-weight:700; color:#08979C;">{{ $completed }}</div>
+        <div style="color:#08979C; font-size:13px;">Completed</div>
+    </div>
+    <div style="background:#FFF1F0; padding:20px; border-radius:12px; text-align:center;">
+        <div style="font-size:28px; font-weight:700; color:#CF1322;">{{ $cancelled }}</div>
+        <div style="color:#CF1322; font-size:13px;">Cancelled</div>
+    </div>
+</div>
+
+<div style="background:white; border-radius:12px; overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse; font-family:'Poppins', sans-serif;">
+        <thead>
+            <tr style="text-align:left; border-bottom:2px solid #eee; background:#FAFAFA;">
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Order</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Status</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Customer</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Total</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $badgeColors = [
+                    'pending' => 'background:#FFF4E5; color:#D48806;',
+                    'processing' => 'background:#E6F7FF; color:#1890FF;',
+                    'completed' => 'background:#E6FFFB; color:#08979C;',
+                    'cancelled' => 'background:#FFF1F0; color:#CF1322;',
+                ];
+            @endphp
+            @forelse($orders as $order)
+            <tr style="border-bottom:1px solid #f3f3f3;" onmouseover="this.style.background='#FDF9F0'" onmouseout="this.style.background='white'">
+                <td style="padding:16px 12px; font-weight:700;">#{{ $order->id }}</td>
+                <td style="padding:16px 12px;">
+                    <span style="{{ $badgeColors[$order->status] ?? '' }} padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </td>
+                <td style="padding:16px 12px;">{{ $order->user->name ?? 'Guest' }}</td>
+                <td style="padding:16px 12px;">{{ $order->items->count() }} item(s)</td>
+                <td style="padding:16px 12px; font-weight:600;">₱{{ number_format($order->total, 2) }}</td>
+                <td style="padding:16px 12px; color:#666;">{{ $order->placed_at?->format('M d, h:i A') }}</td>
+                <td style="padding:16px 12px;">
+                    <a href="{{ route('staff.orders.show', $order) }}" 
+                       style="background:#B07051; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:500;">
+                        Process
+                    </a>
+                </td>
+            </tr>
+            @empty
+            <tr><td colspan="7" style="padding:40px; text-align:center; color:#999;">No orders to process.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:20px;">
+    {{ $orders->links() }}
+</div>
 @endsection

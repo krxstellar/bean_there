@@ -26,7 +26,8 @@ class AuthController extends Controller
 
         if (Auth::attempt($validated, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/')->with('success', 'Logged in successfully.');
+            $user = Auth::user();
+            return redirect()->intended($this->redirectForRole($user))->with('success', 'Logged in successfully.');
         }
 
         return back()->withErrors([
@@ -53,10 +54,11 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        $user->assignRole('customer');
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Account created and logged in.');
+        return redirect($this->redirectForRole($user))->with('success', 'Account created and logged in.');
     }
 
     public function logout(Request $request)
@@ -65,5 +67,15 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/')->with('success', 'Logged out successfully.');
+    }
+
+    // DETERMINE REDIRECT DESTINATION BASED ON ROLE
+    private function redirectForRole(User $user): string
+    {
+        return match (true) {
+            $user->hasRole('admin') => '/test-admin',
+            $user->hasRole('staff') => '/test-staff',
+            default => '/',
+        };
     }
 }

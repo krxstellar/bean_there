@@ -4,8 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\StaffProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminOrdersController;
+use App\Http\Controllers\StaffOrdersController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Product;
 
@@ -43,7 +45,7 @@ Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add')
 Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
 
-// CHECKOUT FLOW ROUTES (protected - requires login)
+// CHECKOUT FLOW ROUTES (PROTECTED - REQUIRES LOGIN)
 Route::middleware('auth')->group(function () {
     Route::get('/shipping', function () {
         return view('customer.shipping');
@@ -51,63 +53,63 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
 });
 
-// Product detail (customer)
+// PRODUCT DETAIL (CUSTOMER)
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
-// STAFF INTERFACE ROUTES (TESTING)
-Route::get('/test-staff', function () {
-    return view('staff.dashboard');
+// STAFF INTERFACE ROUTES (PROTECTED BY STAFF ROLE)
+Route::middleware(['auth', 'role:staff'])->group(function () {
+    Route::get('/test-staff', function () {
+        return view('staff.dashboard');
+    })->name('staff.dashboard');
+
+    Route::get('/staff/orders', [StaffOrdersController::class, 'index'])->name('staff.orders');
+    Route::get('/staff/orders/{order}', [StaffOrdersController::class, 'show'])->name('staff.orders.show');
+    Route::patch('/staff/orders/{order}/status', [StaffOrdersController::class, 'updateStatus'])->name('staff.orders.updateStatus');
+
+    Route::get('/staff/catalog', [StaffProductController::class, 'index'])->name('staff.catalog');
 });
 
-Route::get('/test-staff-orders', function () {
-    return view('staff.orders');
-});
+// ADMIN MANAGEMENT ROUTES (PROTECTED BY ADMIN ROLE)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/test-admin', function () {
+        return view('admin.dashboard');
+    });
 
-Route::get('/test-staff-catalog', function () {
-    return view('staff.catalog');
-});
+    Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
+    Route::get('/admin/orders/{order}', [AdminOrdersController::class, 'show'])->name('admin.orders.show');
+    Route::patch('/admin/orders/{order}/status', [AdminOrdersController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
-// ADMIN MANAGEMENT ROUTES
-Route::get('/test-admin', function () {
-    return view('admin.dashboard');
-});
+    Route::get('/admin/catalog', [AdminProductController::class, 'index'])->name('admin.catalog');
 
-Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
-Route::get('/admin/orders/{order}', [AdminOrdersController::class, 'show'])->name('admin.orders.show');
+    Route::get('/admin/payments', function () {
+        return view('admin.payments');
+    })->name('admin.payments');
 
-Route::get('/admin/catalog', function () {
-    return view('admin.catalog');
-})->name('admin.catalog');
+    Route::get('/admin/customers', function () {
+        return view('admin.customers');
+    })->name('admin.customers');
 
-Route::get('/admin/payments', function () {
-    return view('admin.payments');
-})->name('admin.payments');
+    Route::get('/admin/users', function () {
+        return view('admin.users');
+    })->name('admin.users');
 
-Route::get('/admin/customers', function () {
-    return view('admin.customers');
-})->name('admin.customers');
+    Route::get('/admin/notifications', function () {
+        return view('admin.notifications');
+    })->name('admin.notifications');
 
-Route::get('/admin/users', function () {
-    return view('admin.users');
-})->name('admin.users');
+    Route::get('/admin/settings', function () {
+        return view('admin.settings');
+    })->name('admin.settings');
 
-Route::get('/admin/notifications', function () {
-    return view('admin.notifications');
-})->name('admin.notifications');
-
-Route::get('/admin/settings', function () {
-    return view('admin.settings');
-})->name('admin.settings');
-
-// Admin Products CRUD (basic, add auth later)
-Route::prefix('admin')->group(function () {
-    Route::resource('products', AdminProductController::class)->names([
-        'index' => 'admin.products.index',
-        'create' => 'admin.products.create',
-        'store' => 'admin.products.store',
-        'edit' => 'admin.products.edit',
-        'update' => 'admin.products.update',
-        'destroy' => 'admin.products.destroy',
-        'show' => 'admin.products.show',
-    ]);
+    // ADMIN PRODUCTS CRUD (INDEX HANDLED BY ADMIN.CATALOG ROUTE ABOVE)
+    Route::prefix('admin')->group(function () {
+        Route::resource('products', AdminProductController::class)->except(['index'])->names([
+            'create' => 'admin.products.create',
+            'store' => 'admin.products.store',
+            'edit' => 'admin.products.edit',
+            'update' => 'admin.products.update',
+            'destroy' => 'admin.products.destroy',
+            'show' => 'admin.products.show',
+        ]);
+    });
 });

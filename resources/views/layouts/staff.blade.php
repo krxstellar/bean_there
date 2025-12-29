@@ -148,13 +148,13 @@
         </div>
 
         <div class="nav-group">
-            <a href="/test-staff" class="nav-item {{ request()->is('test-staff') ? 'active' : '' }}">
+            <a href="{{ route('staff.dashboard') }}" class="nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
                 <i class="fa-solid fa-house"></i> Dashboard
             </a>
-            <a href="/test-staff-orders" class="nav-item {{ request()->is('test-staff-orders') ? 'active' : '' }}">
+            <a href="{{ route('staff.orders') }}" class="nav-item {{ request()->routeIs('staff.orders*') ? 'active' : '' }}">
                 <i class="fa-solid fa-receipt"></i> Orders
             </a>
-            <a href="/test-staff-catalog" class="nav-item {{ request()->is('test-staff-catalog') ? 'active' : '' }}">
+            <a href="{{ route('staff.catalog') }}" class="nav-item {{ request()->routeIs('staff.catalog') ? 'active' : '' }}">
                 <i class="fa-solid fa-cookie-bite"></i> Product Catalog
             </a>
         </div>

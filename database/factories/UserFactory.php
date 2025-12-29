@@ -6,21 +6,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
+// @EXTENDS \ILLUMINATE\DATABASE\ELOQUENT\FACTORIES\FACTORY<\APP\MODELS\USER>
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
+    // THE CURRENT PASSWORD BEING USED BY THE FACTORY
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    // DEFINE THE MODEL'S DEFAULT STATE
     public function definition(): array
     {
         return [
@@ -32,9 +24,7 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+    // INDICATE THAT THE MODEL'S EMAIL ADDRESS SHOULD BE UNVERIFIED
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

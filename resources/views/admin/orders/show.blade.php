@@ -2,44 +2,101 @@
 
 @section('admin-content')
 <div>
-    <h1 style="font-family:'Cooper Black', serif; color:#4A2C2A;">Order #{{ $order->id }}</h1>
-    <p>Status: <strong>{{ ucfirst($order->status) }}</strong></p>
-    <p>Total: <strong>₱{{ number_format($order->total, 2) }}</strong></p>
-    <p>Customer: <strong>{{ $order->user->name ?? 'Guest' }}</strong></p>
-    <p>Placed: <strong>{{ $order->placed_at?->format('Y-m-d H:i') }}</strong></p>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+        <h1 style="font-family:'Cooper Black', serif; color:#4A2C2A; margin:0;">Order #{{ $order->id }}</h1>
+        <a href="{{ route('admin.orders') }}" style="color:#4A2C2A; text-decoration:none;">&larr; Back to Orders</a>
+    </div>
 
-    <h3 style="margin-top:24px;">Shipping Address</h3>
-    @if($shipping)
-        <div>
-            <div>{{ $shipping->full_name }}</div>
-            <div>{{ $shipping->phone }}</div>
-            <div>{{ $shipping->line1 }} {{ $shipping->line2 }}</div>
-            <div>{{ $shipping->city }}, {{ $shipping->province }} {{ $shipping->postal_code }}</div>
+    @if(session('success'))
+        <div style="background:#d4edda; border:1px solid #c3e6cb; color:#155724; padding:12px 16px; border-radius:8px; margin-bottom:20px;">
+            {{ session('success') }}
         </div>
-    @else
-        <p>No shipping address.</p>
     @endif
 
-    <h3 style="margin-top:24px;">Items</h3>
-    <table style="width:100%; border-collapse:collapse;">
-        <thead>
-            <tr style="text-align:left; border-bottom:1px solid #eee;">
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($order->items as $item)
-                <tr style="border-bottom:1px solid #f3f3f3;">
-                    <td>{{ $item->product->name ?? ('#'.$item->product_id) }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                    <td>₱{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+    {{-- Order Status Update Form --}}
+    <div style="background:#FDF9F0; padding:20px; border-radius:12px; margin-bottom:24px;">
+        <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+            @csrf
+            @method('PATCH')
+            <label style="font-weight:600; color:#4A2C2A;">Status:</label>
+            <select name="status" style="padding:10px 16px; border-radius:8px; border:1px solid #ccc; font-size:14px; min-width:160px;">
+                @foreach($statuses as $status)
+                    <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
+                        {{ ucfirst($status) }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" style="background:#4A2C2A; color:white; padding:10px 24px; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                Update Status
+            </button>
+            
+            {{-- Status Badge --}}
+            @php
+                $badgeColors = [
+                    'pending' => 'background:#FFF4E5; color:#D48806;',
+                    'processing' => 'background:#E6F7FF; color:#1890FF;',
+                    'completed' => 'background:#E6FFFB; color:#08979C;',
+                    'cancelled' => 'background:#FFF1F0; color:#CF1322;',
+                ];
+            @endphp
+            <span style="{{ $badgeColors[$order->status] ?? '' }} padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600;">
+                {{ ucfirst($order->status) }}
+            </span>
+        </form>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px;">
+        {{-- Order Info --}}
+        <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee;">
+            <h3 style="margin-top:0; color:#4A2C2A;">Order Details</h3>
+            <p><strong>Total:</strong> ₱{{ number_format($order->total, 2) }}</p>
+            <p><strong>Customer:</strong> {{ $order->user->name ?? 'Guest' }} ({{ $order->user->email ?? '-' }})</p>
+            <p><strong>Placed:</strong> {{ $order->placed_at?->format('M d, Y h:i A') }}</p>
+        </div>
+
+        {{-- Shipping Address --}}
+        <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee;">
+            <h3 style="margin-top:0; color:#4A2C2A;">Shipping Address</h3>
+            @if($shipping)
+                <div>{{ $shipping->full_name }}</div>
+                <div>{{ $shipping->phone }}</div>
+                <div>{{ $shipping->line1 }} {{ $shipping->line2 }}</div>
+                <div>{{ $shipping->city }}, {{ $shipping->province }} {{ $shipping->postal_code }}</div>
+            @else
+                <p style="color:#999;">No shipping address.</p>
+            @endif
+        </div>
+    </div>
+
+    {{-- Order Items --}}
+    <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee;">
+        <h3 style="margin-top:0; color:#4A2C2A;">Items</h3>
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="text-align:left; border-bottom:2px solid #eee; color:#888; font-size:13px; text-transform:uppercase;">
+                    <th style="padding:12px 8px;">Product</th>
+                    <th style="padding:12px 8px;">Qty</th>
+                    <th style="padding:12px 8px;">Unit Price</th>
+                    <th style="padding:12px 8px;">Subtotal</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach($order->items as $item)
+                    <tr style="border-bottom:1px solid #f3f3f3;">
+                        <td style="padding:14px 8px;">{{ $item->product->name ?? ('#'.$item->product_id) }}</td>
+                        <td style="padding:14px 8px;">{{ $item->quantity }}</td>
+                        <td style="padding:14px 8px;">₱{{ number_format($item->unit_price, 2) }}</td>
+                        <td style="padding:14px 8px; font-weight:600;">₱{{ number_format($item->unit_price * $item->quantity, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr style="border-top:2px solid #4A2C2A;">
+                    <td colspan="3" style="padding:14px 8px; text-align:right; font-weight:700;">Total:</td>
+                    <td style="padding:14px 8px; font-weight:700; font-size:18px;">₱{{ number_format($order->total, 2) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 </div>
 @endsection
