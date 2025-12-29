@@ -118,16 +118,23 @@
     <div class="login-card">
         <h1>Login</h1>
         
-        <form action="{{ url('/') }}" method="GET">
+        @if($errors->any())
+            <div style="background:#ffe5e5;color:#c0392b;padding:12px;border-radius:8px;margin-bottom:16px;">
+                @foreach($errors->all() as $err)
+                    <div>{{ $err }}</div>
+                @endforeach
+            </div>
+        @endif
+        <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+                <input type="email" name="email" class="form-control" placeholder="Enter email" value="{{ old('email') }}" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <div class="password-container">
-                    <input type="password" name="password" id="passwordField" class="form-control" placeholder="Must be 8 characters" required>
+                    <input type="password" name="password" id="passwordField" class="form-control" placeholder="Enter password" required>
                     <i class="fa-regular fa-eye-slash toggle-eye" id="toggleEye"></i>
                 </div>
             </div>
@@ -135,7 +142,6 @@
                 <label class="remember-me">
                     <input type="checkbox" name="remember"> Remember me
                 </label>
-                <a href="#" style="color: #4A2C2A; text-decoration: underline;">Forgot Password?</a>
             </div>
             <button type="submit" class="btn-submit">Login</button>
         </form>

@@ -145,22 +145,31 @@
     <div class="register-card">
         <h1>Create Account</h1>
         
-        <form>
+        @if($errors->any())
+            <div style="background:#ffe5e5;color:#c0392b;padding:12px;border-radius:8px;margin-bottom:16px;">
+                @foreach($errors->all() as $err)
+                    <div>{{ $err }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
             <div class="register-grid">
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Enter Full Name" required>
+                    <input type="text" name="name" class="form-control" placeholder="Enter Full Name" value="{{ old('name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
+                    <input type="email" name="email" class="form-control" placeholder="Enter Email" value="{{ old('email') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label>Password</label>
                     <div class="password-container">
-                        <input type="password" name="password" id="regPass" class="form-control" placeholder="Must be 8 characters" required>
+                        <input type="password" name="password" id="regPass" class="form-control" placeholder="Min 8 characters" required>
                         <i class="fa-regular fa-eye-slash toggle-eye" onclick="toggleVisibility('regPass', this)"></i>
                     </div>
                 </div>
@@ -168,14 +177,9 @@
                 <div class="form-group">
                     <label>Confirm Password</label>
                     <div class="password-container">
-                        <input type="password" name="password_confirmation" id="regPassConfirm" class="form-control" placeholder="Must be 8 characters" required>
+                        <input type="password" name="password_confirmation" id="regPassConfirm" class="form-control" placeholder="Confirm password" required>
                         <i class="fa-regular fa-eye-slash toggle-eye" onclick="toggleVisibility('regPassConfirm', this)"></i>
                     </div>
-                </div>
-
-                <div class="terms-wrapper">
-                    <input type="checkbox" id="terms" name="terms">
-                    <label for="terms">I accept the terms and privacy policy</label>
                 </div>
             </div>
 
@@ -183,7 +187,7 @@
                 <p class="login-text">
                     Already have an account? <a href="{{ route('login') }}">Log in here</a>
                 </p>
-                <a href="{{ route('welcome') }}" class="btn-submit">Create Account</a>
+                <button type="submit" class="btn-submit">Create Account</button>
             </div>
         </form>
     </div>

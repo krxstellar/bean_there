@@ -114,151 +114,33 @@
 
     <div class="category-section">
         <div class="category-header">
-            <h2>Hot Coffees & Espresso</h2>
+            <h2>{{ $category->name ?? 'Menu' }}</h2>
         </div>
 
         <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ asset('images/latte.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Hot Caffe Latte</h3>
-                    <p>120.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d1">
-                        <input type="hidden" name="name" value="Hot Caffe Latte">
-                        <input type="hidden" name="price" value="120">
-                        <input type="hidden" name="image" value="images/latte.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
+            @forelse($products ?? [] as $p)
+                <div class="product-card">
+                    <a href="{{ route('products.show', $p->slug) }}">
+                        <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/espressodrink.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                    </a>
+                    <div class="product-info">
+                        <h3>{{ $p->name }}</h3>
+                        <p>{{ number_format($p->price, 2) }} PHP</p>
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $p->id }}">
+                            <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                            <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/sikwate.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Traditional Sikwate</h3>
-                    <p>110.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d2">
-                        <input type="hidden" name="name" value="Traditional Sikwate">
-                        <input type="hidden" name="price" value="110">
-                        <input type="hidden" name="image" value="images/sikwate.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
+            @empty
+                <div id="no-results-container" style="display:block">
+                    <h2>No drinks found</h2>
+                    <p style="color: #9B8173;">Please check back later.</p>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/whitechoc.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>White Chocolate Mocha</h3>
-                    <p>155.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d3">
-                        <input type="hidden" name="name" value="White Chocolate Mocha">
-                        <input type="hidden" name="price" value="155">
-                        <input type="hidden" name="image" value="images/whitechoc.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/espressodrink.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Double Espresso</h3>
-                    <p>100.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d4">
-                        <input type="hidden" name="name" value="Double Espresso">
-                        <input type="hidden" name="price" value="100">
-                        <input type="hidden" name="image" value="images/espressodrink.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
+            @endforelse
         </div>
-    </div>
-
-    <div class="category-section">
-        <div class="category-header">
-            <h2>Cold Coffees & Cold Brew</h2>
-        </div>
-
-        <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ asset('images/latte.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Iced Latte</h3>
-                    <p>135.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d5">
-                        <input type="hidden" name="name" value="Iced Latte">
-                        <input type="hidden" name="price" value="135">
-                        <input type="hidden" name="image" value="images/latte.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/sikwate.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Iced Sikwate</h3>
-                    <p>125.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d6">
-                        <input type="hidden" name="name" value="Iced Sikwate">
-                        <input type="hidden" name="price" value="125">
-                        <input type="hidden" name="image" value="images/sikwate.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/whitechoc.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Iced White Mocha</h3>
-                    <p>165.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d7">
-                        <input type="hidden" name="name" value="Iced White Mocha">
-                        <input type="hidden" name="price" value="165">
-                        <input type="hidden" name="image" value="images/whitechoc.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/espressodrink.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Cold Brew Coffee</h3>
-                    <p>140.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="d8">
-                        <input type="hidden" name="name" value="Cold Brew Coffee">
-                        <input type="hidden" name="price" value="140">
-                        <input type="hidden" name="image" value="images/espressodrink.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="no-results-container">
-        <h2>No drink found like "<span id="search-term-display"></span>"</h2>
-        <p style="color: #9B8173;">Try searching for something else!</p>
     </div>
 </div>
 

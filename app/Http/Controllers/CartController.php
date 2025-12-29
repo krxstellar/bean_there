@@ -13,17 +13,24 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-        $cart = session()->get('cart', []);
-        $id = $request->id;
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:products,id',
+            'quantity' => 'nullable|integer|min:1',
+        ]);
 
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+        $cart = session()->get('cart', []);
+        $id = (int) $validated['id'];
+        $qty = (int) ($validated['quantity'] ?? 1);
+
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity'] += $qty;
         } else {
+            $product = \App\Models\Product::find($id);
             $cart[$id] = [
-                "name" => $request->name,
-                "quantity" => 1,
-                "price" => $request->price,
-                "image" => $request->image
+                'name' => $product->name,
+                'quantity' => $qty,
+                'price' => (float) $product->price,
+                'image' => $product->image_url,
             ];
         }
 
@@ -33,22 +40,28 @@ class CartController extends Controller
 
     public function update(Request $request)
     {
-        if($request->id && $request->quantity) {
-            $cart = session()->get('cart');
-            $cart[$request->id]["quantity"] = $request->quantity;
+        $validated = $request->validate([
+            'id' => 'required|integer',
+            'quantity' => 'required|integer|min:1',
+        ]);
+        $cart = session()->get('cart', []);
+        if (isset($cart[$validated['id']])) {
+            $cart[$validated['id']]['quantity'] = (int) $validated['quantity'];
             session()->put('cart', $cart);
             return response()->json(['success' => true]);
         }
+        return response()->json(['success' => false], 404);
     }
 
     public function removeFromCart(Request $request)
     {
-        if($request->id) {
-            $cart = session()->get('cart');
-            if(isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
-            }
+        $validated = $request->validate([
+            'id' => 'required|integer',
+        ]);
+        $cart = session()->get('cart', []);
+        if (isset($cart[$validated['id']])) {
+            unset($cart[$validated['id']]);
+            session()->put('cart', $cart);
         }
         return redirect()->back()->with('success', 'Item removed.');
     }

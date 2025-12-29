@@ -113,103 +113,33 @@
 
     <div class="category-section">
         <div class="category-header">
-            <h2>Cakes & Slices</h2>
+            <h2>{{ $category->name ?? 'Menu' }}</h2>
         </div>
 
         <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ asset('images/rolls.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Cinnamon Rolls</h3>
-                    <p>899.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="p1">
-                        <input type="hidden" name="name" value="Cinnamon Rolls">
-                        <input type="hidden" name="price" value="899">
-                        <input type="hidden" name="image" value="images/rolls.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
+            @forelse($products ?? [] as $p)
+                <div class="product-card">
+                    <a href="{{ route('products.show', $p->slug) }}">
+                        <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                    </a>
+                    <div class="product-info">
+                        <h3>{{ $p->name }}</h3>
+                        <p>{{ number_format($p->price, 2) }} PHP</p>
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $p->id }}">
+                            <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                            <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/smorse.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Classic S'mores</h3>
-                    <p>899.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="p2">
-                        <input type="hidden" name="name" value="Classic S'mores">
-                        <input type="hidden" name="price" value="899">
-                        <input type="hidden" name="image" value="images/smorse.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
+            @empty
+                <div id="no-results-container" style="display:block">
+                    <h2>No pastries found</h2>
+                    <p style="color: #9B8173;">Please check back later.</p>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/bamboo.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Matcha Bamboo</h3>
-                    <p>899.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="p3">
-                        <input type="hidden" name="name" value="Matcha Bamboo">
-                        <input type="hidden" name="price" value="899">
-                        <input type="hidden" name="image" value="images/bamboo.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <img src="{{ asset('images/crossant.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Almond Croissant</h3>
-                    <p>899.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="p4">
-                        <input type="hidden" name="name" value="Almond Croissant">
-                        <input type="hidden" name="price" value="899">
-                        <input type="hidden" name="image" value="images/crossant.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
+            @endforelse
         </div>
-    </div>
-
-    <div class="category-section">
-        <div class="category-header">
-            <h2>Breads & Viennoiserie</h2>
-        </div>
-
-        <div class="product-grid">
-            <div class="product-card">
-                <img src="{{ asset('images/rolls.jpg') }}" class="product-image">
-                <div class="product-info">
-                    <h3>Cinnamon Rolls</h3>
-                    <p>899.00 PHP</p>
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="id" value="p5">
-                        <input type="hidden" name="name" value="Cinnamon Rolls">
-                        <input type="hidden" name="price" value="899">
-                        <input type="hidden" name="image" value="images/rolls.jpg">
-                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                    </form>
-                </div>
-            </div>
-            </div>
-    </div>
-
-    <div id="no-results-container">
-        <h2>No product found like "<span id="search-term-display"></span>"</h2>
-        <p style="color: #9B8173;">Try searching for something else!</p>
     </div>
 </div>
 

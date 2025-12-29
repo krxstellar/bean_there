@@ -9,12 +9,55 @@
         </button>
     </div>
 
+    @if(isset($products))
+    <div style="margin-top: 40px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <h2 style="font-family: 'Cooper Black', serif; color: #4A2C2A; margin: 0; font-size: 1.8rem;">Products</h2>
+            <div style="flex-grow: 1; height: 2px; background: #F0F2F5;"></div>
+            <a href="{{ route('admin.products.create') }}" style="background-color: #AEA9A0; color: white; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600;">Add Product</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px;">
+            @forelse($products as $p)
+            <div class="product-card">
+                <div class="product-image">
+                    @if($p->image_url)
+                        <img src="{{ asset($p->image_url) }}" alt="{{ $p->name }}" style="width:100%; height:160px; object-fit:cover;">
+                    @else
+                        <i class="fa-solid fa-mug-hot fa-3x"></i>
+                    @endif
+                </div>
+                <div class="product-info">
+                    <h3>{{ $p->name }}</h3>
+                    <p class="category-tag">{{ $p->category->name ?? 'Uncategorized' }}</p>
+                    <div class="price-row">
+                        <span>₱{{ number_format($p->price, 2) }}</span>
+                        <div class="action-btns">
+                            <a class="edit" href="{{ route('admin.products.edit', $p) }}" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-pen"></i></a>
+                            <form method="POST" action="{{ route('admin.products.destroy', $p) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="delete" type="submit"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @empty
+                <p>No products yet.</p>
+            @endforelse
+        </div>
+        <div style="margin-top:20px;">
+            {{ $products->links() }}
+        </div>
+    </div>
+    @else
+    <!-- Fallback to static content when no $products provided -->
     <div style="margin-top: 40px;">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
             <h2 style="font-family: 'Cooper Black', serif; color: #4A2C2A; margin: 0; font-size: 1.8rem;">Pastries</h2>
             <div style="flex-grow: 1; height: 2px; background: #F0F2F5;"></div>
         </div>
-
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px;">
             <div class="product-card">
                 <div class="product-image"><i class="fa-solid fa-cookie-bite fa-3x"></i></div>
@@ -30,23 +73,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="product-card">
-                <div class="product-image"><i class="fa-solid fa-bread-slice fa-3x"></i></div>
-                <div class="product-info">
-                    <h3>Classic Ensaymada</h3>
-                    <p class="category-tag">Pastry • 6pcs/box</p>
-                    <div class="price-row">
-                        <span>₱280.00</span>
-                        <div class="action-btns">
-                            <button class="edit"><i class="fa-solid fa-pen"></i></button>
-                            <button class="delete"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
+    @endif
 
     <div style="margin-top: 60px; margin-bottom: 40px;">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">

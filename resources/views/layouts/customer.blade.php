@@ -307,6 +307,16 @@
             <a href="{{ route('login') }}" class="icon-circle {{ request()->is('login') || request()->is('register') ? 'active-page' : '' }}">
                 <img src="{{ asset('images/User Profile.png') }}" alt="Profile">
             </a>
+
+            @auth
+                <div style="margin-left: 8px; color: #4A2C2A; font-size: 12px;">
+                    <div style="margin-bottom: 4px;">{{ Auth::user()->name }}</div>
+                    <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; color: #4A2C2A; cursor: pointer; font-size: 12px; text-decoration: underline;">Logout</button>
+                    </form>
+                </div>
+            @endauth
         </div>
     </nav>
 
