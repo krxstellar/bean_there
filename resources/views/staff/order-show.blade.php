@@ -1,4 +1,4 @@
-@extends('layouts.staff')
+s@extends('layouts.staff')
 
 @section('staff-content')
 <div style="margin-bottom:24px;">
@@ -6,6 +6,7 @@
         ← Back to Orders
     </a>
 </div>
+
 
 <div style="display:flex; gap:24px; flex-wrap:wrap;">
     {{-- Order Details --}}
