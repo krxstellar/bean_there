@@ -291,7 +291,7 @@
                 </div>
             </div>
 
-            <div class="icon-circle" id="navTrackBtn" style="cursor: default;">
+            <div class="icon-circle" id="navTrackBtn" style="cursor: pointer;" @authenticated onclick="window.location.href='{{ route('orders.index') }}'" @endauthenticated>
                 <img src="{{ asset('images/Track.png') }}" alt="Track">
             </div>
             

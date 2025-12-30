@@ -12,6 +12,22 @@ use Illuminate\Support\Carbon;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = auth()->user()->orders()->orderBy('placed_at', 'desc')->get();
+        return view('customer.orders', compact('orders'));
+    }
+
+    public function show(Order $order)
+    {
+        // Ensure the authenticated user owns this order
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        return view('customer.order-show', compact('order'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
