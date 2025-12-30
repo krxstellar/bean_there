@@ -80,10 +80,14 @@
 
     .order-top {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 1fr 1fr 1fr 1fr auto;
         gap: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid rgba(74, 44, 42, 0.2);
+        align-items: center;
+    }
+
+    .details-col {
+        display: flex;
+        justify-content: flex-end;
     }
 
     .order-info-label {
@@ -183,12 +187,12 @@
 
         .order-top {
             grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .order-bottom {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
+        .details-col {
+            grid-column: 1 / -1;
+            justify-content: center;
         }
 
         .details-btn {
@@ -232,21 +236,9 @@
                             <p class="order-info-label">Total</p>
                             <p class="order-info-value">₱{{ number_format($order->total, 2) }}</p>
                         </div>
-                    </div>
-
-                    <div class="order-bottom">
-                        <div>
-                            <p class="order-info-label">Items ({{ $order->items->count() }})</p>
-                            <ul class="order-items-list">
-                                @foreach($order->items->take(3) as $item)
-                                    <li>{{ $item->product->name }} x{{ $item->quantity }}</li>
-                                @endforeach
-                                @if($order->items->count() > 3)
-                                    <li style="color: #7a5c5a;">+{{ $order->items->count() - 3 }} more item(s)</li>
-                                @endif
-                            </ul>
+                        <div class="details-col">
+                            <a href="{{ route('orders.show', $order) }}" class="details-btn">View Details</a>
                         </div>
-                        <a href="{{ route('orders.show', $order) }}" class="details-btn">View Details</a>
                     </div>
                 </div>
             @endforeach
