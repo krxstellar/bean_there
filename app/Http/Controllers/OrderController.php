@@ -28,6 +28,22 @@ class OrderController extends Controller
         return view('customer.order-show', compact('order'));
     }
 
+    public function checkout(Request $request)
+    {
+        $selectedItems = $request->query('selected_items', '');
+        $instructions = $request->query('instructions', '');
+        
+        if (empty($selectedItems)) {
+            return redirect()->route('cart.index')->with('error', 'Please select items to checkout.');
+        }
+
+        // Store selected items and instructions in session for the store method
+        session()->put('checkout_items', $selectedItems);
+        session()->put('checkout_instructions', $instructions);
+
+        return view('customer.shipping');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -45,9 +61,24 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
+        // Get selected items from session
+        $selectedItems = session('checkout_items', '');
+        $selectedIds = array_filter(explode(',', $selectedItems));
+
+        if (empty($selectedIds)) {
+            return redirect()->route('cart.index')->with('error', 'Please select items to checkout.');
+        }
+
         $total = 0;
         $itemsData = [];
+        $checkedOutIds = [];
+
         foreach ($cart as $id => $item) {
+            // Only process selected items
+            if (!in_array($id, $selectedIds)) {
+                continue;
+            }
+
             $product = Product::find($id);
             if (! $product || ! $product->is_active) {
                 continue;
@@ -60,18 +91,23 @@ class OrderController extends Controller
                 'quantity' => $qty,
                 'unit_price' => $unitPrice,
             ];
+            $checkedOutIds[] = $id;
         }
 
         if ($total <= 0) {
             return redirect()->route('cart.index')->with('error', 'No valid items in cart.');
         }
 
-        DB::transaction(function () use ($itemsData, $total, $request) {
+        // Get instructions from session
+        $instructions = session()->get('checkout_instructions', '');
+
+        DB::transaction(function () use ($itemsData, $total, $request, $instructions) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'status' => 'pending',
                 'total' => $total,
                 'currency' => 'PHP',
+                'instructions' => $instructions,
                 'placed_at' => now(),
             ]);
 
@@ -94,7 +130,16 @@ class OrderController extends Controller
             ]);
         });
 
-        session()->forget('cart');
-        return redirect()->route('welcome')->with('success', 'Order placed successfully!');
+        // Remove only checked out items from cart, keep unchecked items
+        $remainingCart = array_diff_key($cart, array_flip($checkedOutIds));
+        if (empty($remainingCart)) {
+            session()->forget('cart');
+        } else {
+            session(['cart' => $remainingCart]);
+        }
+
+        session()->forget('checkout_items');
+        session()->forget('checkout_instructions');
+        return redirect()->route('welcome')->with('order_success', true);
     }
 }

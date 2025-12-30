@@ -330,6 +330,110 @@
         </div>
     @endif
 
+    @if(session('order_success'))
+        <div id="shipping-policy-overlay" class="policy-overlay">
+            <div class="policy-modal">
+                <div class="policy-header">
+                    <i class="fa-solid fa-check-circle" style="color: #27ae60; font-size: 2.5rem;"></i>
+                    <h2>Order Placed Successfully!</h2>
+                </div>
+                <div class="policy-content">
+                    <h3>Shipping Policy</h3>
+                    <div class="policy-item">
+                        <strong>How we process deliveries</strong>
+                        <p>We ensure all baked goods are packed securely to maintain freshness. Deliveries are scheduled within Metro Manila from Monday to Saturday.</p>
+                    </div>
+                    <div class="policy-item">
+                        <strong>Pick-up Details</strong>
+                        <p>For pick-up orders, please wait for your "Ready for Pick-up" notification before heading to our location.</p>
+                    </div>
+                    <div class="policy-item">
+                        <strong>Standard Lead Time</strong>
+                        <p>Most orders require a 1-day lead time to prepare your items fresh from the oven.</p>
+                    </div>
+                </div>
+                <button id="policy-ok-btn" class="policy-ok-btn">OK, Got it!</button>
+            </div>
+        </div>
+
+        <style>
+            .policy-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .policy-modal {
+                background: #FDF9F0;
+                border: 2px solid #4A2C2A;
+                border-radius: 20px;
+                padding: 40px;
+                max-width: 500px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                text-align: center;
+                font-family: 'Poppins', sans-serif;
+                color: #4A2C2A;
+            }
+            .policy-header h2 {
+                font-family: 'Cooper Black', serif;
+                font-size: 1.5rem;
+                margin: 15px 0 20px 0;
+                color: #4A2C2A;
+            }
+            .policy-content h3 {
+                font-size: 1.1rem;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(74, 44, 42, 0.2);
+            }
+            .policy-item {
+                text-align: left;
+                margin-bottom: 15px;
+            }
+            .policy-item strong {
+                display: block;
+                font-size: 0.9rem;
+                margin-bottom: 5px;
+            }
+            .policy-item p {
+                font-size: 0.85rem;
+                line-height: 1.5;
+                margin: 0;
+                color: #5a4a48;
+            }
+            .policy-ok-btn {
+                background-color: #4A2C2A;
+                color: #FDF9F0;
+                border: none;
+                padding: 14px 50px;
+                border-radius: 25px;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                margin-top: 20px;
+                transition: opacity 0.3s;
+            }
+            .policy-ok-btn:hover {
+                opacity: 0.9;
+            }
+        </style>
+
+        <script>
+            document.getElementById('policy-ok-btn').addEventListener('click', function() {
+                document.getElementById('shipping-policy-overlay').style.display = 'none';
+            });
+        </script>
+    @endif
+
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-column contact">
@@ -346,7 +450,7 @@
                 <ul>
                     <li><a id="footerSearchLink">Search</a></li>
                     <li><a href="{{ route('faqs') }}">FAQs</a></li>
-                    <li><a href="{{ route('checkout') }}">Shipping Policy</a></li>
+                    <li><a href="{{ route('shipping.policy') }}">Shipping Policy</a></li>
                 </ul>
             </div>
             <div class="footer-divider"></div>

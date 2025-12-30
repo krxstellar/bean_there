@@ -17,6 +17,7 @@ class Order extends Model
         'status',
         'total',
         'currency',
+        'instructions',
         'placed_at',
     ];
 

@@ -168,6 +168,14 @@
         outline: none;
     }
 
+    .char-counter {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.8rem;
+        color: #7a5c5a;
+        text-align: right;
+        margin-top: 5px;
+    }
+
     .cart-summary {
         text-align: right;
         flex: 0 1 40%;
@@ -191,6 +199,8 @@
         font-family: 'Poppins', sans-serif;
         font-size: 1.3rem;
         font-weight: 400;
+        min-width: 150px;
+        text-align: right;
     }
 
     .tax-shipping-text {
@@ -275,8 +285,8 @@
         {{-- LOOP THROUGH ITEMS IN THE CART SESSION --}}
         @foreach(session('cart') as $id => $details)
             @php $subtotal += $details['price'] * $details['quantity']; @endphp
-            <div class="cart-item">
-                <input type="checkbox" class="item-checkbox">
+            <div class="cart-item" data-item-id="{{ $id }}">
+                <input type="checkbox" class="item-checkbox" data-id="{{ $id }}" data-price="{{ $details['price'] }}" data-quantity="{{ $details['quantity'] }}" checked>
                 
                 <div class="item-info">
                     <img src="{{ asset($details['image']) }}" class="item-image" alt="{{ $details['name'] }}">
@@ -313,20 +323,25 @@
         <div class="cart-footer">
             <div class="instructions-box">
                 <label for="special-instructions">Order Special Instructions:</label>
-                <textarea id="special-instructions" name="instructions" placeholder="Anything we should know?"></textarea>
+                <textarea id="special-instructions" name="instructions" placeholder="Anything we should know?" maxlength="500"></textarea>
+                <div class="char-counter">
+                    <span id="char-count">0</span> / 500 characters
+                </div>
             </div>
 
             <div class="cart-summary">
                 <div class="subtotal-container">
                     <span class="subtotal-label">Subtotal:</span>
-                    <span class="subtotal-value">{{ number_format($subtotal, 2) }} PHP</span>
+                    <span class="subtotal-value" id="subtotal-display">{{ number_format($subtotal, 2) }} PHP</span>
                 </div>
                 <p class="tax-shipping-text">Taxes and shipping calculated at checkout</p>
                 
                 {{-- REDIRECT TO SHIPPING/CHECKOUT PAGE --}}
-                <form action="{{ route('checkout') }}" method="GET">
+                <form action="{{ route('checkout') }}" method="GET" id="checkout-form">
                     @csrf
-                    <button type="submit" class="checkout-btn">Check out</button>
+                    <input type="hidden" name="selected_items" id="selected-items-input" value="">
+                    <input type="hidden" name="instructions" id="instructions-input" value="">
+                    <button type="submit" class="checkout-btn" id="checkout-btn">Check out</button>
                 </form>
             </div>
         </div>
@@ -345,6 +360,68 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const subtotalDisplay = document.getElementById('subtotal-display');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const selectedItemsInput = document.getElementById('selected-items-input');
+        const instructionsInput = document.getElementById('instructions-input');
+        const instructionsTextarea = document.getElementById('special-instructions');
+        const charCount = document.getElementById('char-count');
+
+        // Update character counter
+        function updateCharCount() {
+            charCount.textContent = instructionsTextarea.value.length;
+        }
+        instructionsTextarea.addEventListener('input', updateCharCount);
+        updateCharCount();
+
+        // CALCULATE SUBTOTAL AND UPDATE CHECKOUT STATE
+        function updateCartState() {
+            let subtotal = 0;
+            let selectedIds = [];
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const price = parseFloat(checkbox.dataset.price);
+                    const quantity = parseInt(checkbox.dataset.quantity);
+                    subtotal += price * quantity;
+                    selectedIds.push(checkbox.dataset.id);
+                }
+            });
+
+            // Update subtotal display
+            subtotalDisplay.textContent = subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' PHP';
+            
+            // Update selected items input
+            selectedItemsInput.value = selectedIds.join(',');
+
+            // Enable/disable checkout button
+            if (selectedIds.length === 0) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.opacity = '0.5';
+                checkoutBtn.style.cursor = 'not-allowed';
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.style.opacity = '1';
+                checkoutBtn.style.cursor = 'pointer';
+            }
+        }
+
+        // Copy instructions to hidden input before form submit
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            instructionsInput.value = instructionsTextarea.value;
+            this.submit();
+        });
+
+        // Listen for checkbox changes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateCartState);
+        });
+
+        // Initialize cart state on page load
+        updateCartState();
+
         // LISTEN FOR QUANTITY BUTTON CLICKS
         document.querySelectorAll('.qty-btn').forEach(button => {
             button.addEventListener('click', function() {

@@ -24,6 +24,10 @@ Route::get('/faqs', function () {
     return view('customer.faqs');
 })->name('faqs');
 
+Route::get('/shipping-policy', function () {
+    return view('customer.ShippingPolicy');
+})->name('shipping.policy');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -47,9 +51,7 @@ Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('ca
 
 // CHECKOUT FLOW ROUTES (PROTECTED - REQUIRES LOGIN)
 Route::middleware('auth')->group(function () {
-    Route::get('/shipping', function () {
-        return view('customer.shipping');
-    })->name('checkout');
+    Route::get('/shipping', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
     
     // ORDER TRACKING ROUTES

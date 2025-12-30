@@ -286,6 +286,15 @@
                     </div>
                 </div>
             @endif
+
+            @if($order->instructions)
+                <div class="detail-card">
+                    <h2 class="detail-card-title">Special Instructions</h2>
+                    <div class="address-text">
+                        {{ $order->instructions }}
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- Order Summary Sidebar -->
