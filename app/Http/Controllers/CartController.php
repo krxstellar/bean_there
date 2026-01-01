@@ -39,7 +39,7 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        // Sync to database if user is logged in
+        // SYNC TO DATABASE IF USER IS LOGGED IN
         if (Auth::check()) {
             $this->syncCartToDatabase();
         }
@@ -58,7 +58,7 @@ class CartController extends Controller
             $cart[$validated['id']]['quantity'] = (int) $validated['quantity'];
             session()->put('cart', $cart);
 
-            // Sync to database if user is logged in
+            // SYNC TO DATABASE IF USER IS LOGGED IN
             if (Auth::check()) {
                 $this->syncCartToDatabase();
             }
@@ -78,7 +78,7 @@ class CartController extends Controller
             unset($cart[$validated['id']]);
             session()->put('cart', $cart);
 
-            // Sync to database if user is logged in
+            // SYNC TO DATABASE IF USER IS LOGGED IN
             if (Auth::check()) {
                 $this->syncCartToDatabase();
             }
@@ -86,18 +86,16 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Item removed.');
     }
 
-    /**
-     * Sync session cart to database for logged-in user
-     */
+    // SYNC SESSION CART TO DATABASE FOR LOGGED-IN USER
     protected function syncCartToDatabase()
     {
         $userId = Auth::id();
         $cart = session()->get('cart', []);
 
-        // Clear existing cart items for this user
+        // CLEAR EXISTING CART ITEMS FOR THIS USER
         CartItem::where('user_id', $userId)->delete();
 
-        // Insert current cart items
+        // INSERT CURRENT CART ITEMS
         foreach ($cart as $productId => $item) {
             CartItem::create([
                 'user_id' => $userId,
@@ -107,9 +105,7 @@ class CartController extends Controller
         }
     }
 
-    /**
-     * Load cart from database to session (called on login)
-     */
+    // LOAD CART FROM DATABASE TO SESSION (CALLED ON LOGIN)
     public static function loadCartFromDatabase($userId)
     {
         $cartItems = CartItem::where('user_id', $userId)->with('product')->get();
@@ -118,7 +114,7 @@ class CartController extends Controller
         foreach ($cartItems as $item) {
             $productId = $item->product_id;
             if (isset($sessionCart[$productId])) {
-                // Merge: add quantities
+                // MERGE: ADD QUANTITIES
                 $sessionCart[$productId]['quantity'] += $item->quantity;
             } else {
                 $sessionCart[$productId] = [
@@ -132,7 +128,7 @@ class CartController extends Controller
 
         session()->put('cart', $sessionCart);
 
-        // Update database with merged cart
+        // UPDATE DATABASE WITH MERGED CART
         CartItem::where('user_id', $userId)->delete();
         foreach ($sessionCart as $productId => $item) {
             CartItem::create([

@@ -4,20 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Subcategory;
 
 class ProductController extends Controller
 {
     public function indexByCategory(string $slug)
     {
         $category = Category::where('slug', $slug)->first();
-        if (! $category) {
-            abort(404);
-        }
+        
+        // GET SUBCATEGORIES WITH THEIR PRODUCTS
+        $subcategories = $category 
+            ? Subcategory::where('category_id', $category->id)
+                ->with(['products' => function ($query) {
+                    $query->where('is_active', true)->orderBy('name');
+                }])
+                ->get()
+            : collect();
 
-        $products = Product::where('category_id', $category->id)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        // GET PRODUCTS WITHOUT SUBCATEGORY (DIRECTLY UNDER MAIN CATEGORY)
+        $productsWithoutSubcategory = $category 
+            ? Product::where('category_id', $category->id)
+                ->whereNull('subcategory_id')
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get()
+            : collect();
 
         $view = match ($slug) {
             'drinks' => 'customer.drinks',
@@ -27,7 +38,8 @@ class ProductController extends Controller
 
         return view($view, [
             'category' => $category,
-            'products' => $products,
+            'subcategories' => $subcategories,
+            'productsWithoutSubcategory' => $productsWithoutSubcategory,
         ]);
     }
 

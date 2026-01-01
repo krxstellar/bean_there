@@ -30,7 +30,7 @@
 
     .about-image {
         flex: 1;
-        background-image: url('{{ asset('images/about-bakeshop.jpg') }}'); 
+        background-image: url('{{ asset('images/about-bakeshop.png') }}'); 
         background-size: cover;
         background-position: center;
         border-right: 2px solid #4A2C2A;

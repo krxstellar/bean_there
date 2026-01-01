@@ -374,7 +374,7 @@
         const instructionsTextarea = document.getElementById('special-instructions');
         const charCount = document.getElementById('char-count');
 
-        // Update character counter
+        // UPDATE CHARACTER COUNTER
         function updateCharCount() {
             charCount.textContent = instructionsTextarea.value.length;
         }
@@ -395,13 +395,13 @@
                 }
             });
 
-            // Update subtotal display
+            // UPDATE SUBTOTAL DISPLAY
             subtotalDisplay.textContent = subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' PHP';
             
-            // Update selected items input
+            // UPDATE SELECTED ITEMS INPUT
             selectedItemsInput.value = selectedIds.join(',');
 
-            // Enable/disable checkout button
+            // ENABLE/DISABLE CHECKOUT BUTTON
             if (selectedIds.length === 0) {
                 checkoutBtn.disabled = true;
                 checkoutBtn.style.opacity = '0.5';
@@ -413,19 +413,19 @@
             }
         }
 
-        // Copy instructions to hidden input before form submit
+        // COPY INSTRUCTIONS TO HIDDEN INPUT BEFORE FORM SUBMIT
         document.getElementById('checkout-form').addEventListener('submit', function(e) {
             e.preventDefault();
             instructionsInput.value = instructionsTextarea.value;
             this.submit();
         });
 
-        // Listen for checkbox changes
+        // LISTEN FOR CHECKBOX CHANGES
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', updateCartState);
         });
 
-        // Initialize cart state on page load
+        // INITIALIZE CART STATE ON PAGE LOAD
         updateCartState();
 
         // LISTEN FOR QUANTITY BUTTON CLICKS

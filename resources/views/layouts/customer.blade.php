@@ -541,7 +541,7 @@
                 if (e.key === 'Enter') executeGlobalSearch();
             });
 
-            // Live filtering for menu pages
+            // LIVE FILTERING FOR MENU PAGES
             navSearchInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase().trim();
                 const productCards = document.querySelectorAll('.product-card');
@@ -576,7 +576,7 @@
                 }
             });
 
-            // Popup auto-fade
+            // POPUP AUTO-FADE
             if (popup) {
                 setTimeout(() => {
                     popup.classList.add('fade-out');
@@ -584,7 +584,7 @@
                 }, 3000); 
             }
 
-            // Handle search from URL
+            // HANDLE SEARCH FROM URL
             const urlParams = new URLSearchParams(window.location.search);
             const searchQuery = urlParams.get('search');
             if (searchQuery) {

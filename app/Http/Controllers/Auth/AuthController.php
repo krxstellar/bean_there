@@ -29,7 +29,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            // Load cart from database and merge with session cart
+            // LOAD CART FROM DATABASE AND MERGE WITH SESSION CART
             CartController::loadCartFromDatabase($user->id);
 
             return redirect()->intended($this->redirectForRole($user))->with('success', 'Logged in successfully.');
@@ -63,7 +63,7 @@ class AuthController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // Sync session cart to database for new user
+        // SYNC SESSION CART TO DATABASE FOR NEW USER
         CartController::loadCartFromDatabase($user->id);
 
         return redirect($this->redirectForRole($user))->with('success', 'Account created and logged in.');

@@ -12,6 +12,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'subcategory_id',
         'name',
         'slug',
         'description',
@@ -25,8 +26,15 @@ class Product extends Model
         'is_active' => 'boolean',
     ];
 
+    // BELONGS TO MAIN CATEGORY (PASTRIES OR DRINKS)
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // BELONGS TO SUBCATEGORY (OPTIONAL)
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Subcategory::class);
     }
 }

@@ -20,7 +20,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        // Ensure the authenticated user owns this order
+        // ENSURE THE AUTHENTICATED USER OWNS THIS ORDER
         if ($order->user_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
@@ -37,7 +37,7 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Please select items to checkout.');
         }
 
-        // Store selected items and instructions in session for the store method
+        // STORE SELECTED ITEMS AND INSTRUCTIONS IN SESSION FOR THE STORE METHOD
         session()->put('checkout_items', $selectedItems);
         session()->put('checkout_instructions', $instructions);
 
@@ -61,7 +61,7 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Get selected items from session
+        // GET SELECTED ITEMS FROM SESSION
         $selectedItems = session('checkout_items', '');
         $selectedIds = array_filter(explode(',', $selectedItems));
 
@@ -74,7 +74,7 @@ class OrderController extends Controller
         $checkedOutIds = [];
 
         foreach ($cart as $id => $item) {
-            // Only process selected items
+            // ONLY PROCESS SELECTED ITEMS
             if (!in_array($id, $selectedIds)) {
                 continue;
             }
@@ -98,7 +98,7 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'No valid items in cart.');
         }
 
-        // Get instructions from session
+        // GET INSTRUCTIONS FROM SESSION
         $instructions = session()->get('checkout_instructions', '');
 
         DB::transaction(function () use ($itemsData, $total, $request, $instructions) {
@@ -130,7 +130,7 @@ class OrderController extends Controller
             ]);
         });
 
-        // Remove only checked out items from cart, keep unchecked items
+        // REMOVE ONLY CHECKED OUT ITEMS FROM CART, KEEP UNCHECKED ITEMS
         $remainingCart = array_diff_key($cart, array_flip($checkedOutIds));
         if (empty($remainingCart)) {
             session()->forget('cart');

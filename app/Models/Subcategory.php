@@ -4,25 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+class Subcategory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'category_id',
         'name',
         'slug',
         'description',
     ];
 
-    // HAS MANY SUBCATEGORIES
-    public function subcategories(): HasMany
+    // BELONGS TO A MAIN CATEGORY (PASTRIES OR DRINKS)
+    public function category(): BelongsTo
     {
-        return $this->hasMany(Subcategory::class);
+        return $this->belongsTo(Category::class);
     }
 
-    // HAS MANY PRODUCTS (DIRECT)
+    // HAS MANY PRODUCTS
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

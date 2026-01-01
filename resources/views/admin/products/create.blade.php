@@ -99,7 +99,7 @@
     const imagePreview = document.getElementById('image-preview');
     const previewImg = document.getElementById('preview-img');
 
-    // Drag and drop
+    // DRAG AND DROP
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadArea.classList.add('dragover');
@@ -119,7 +119,7 @@
         }
     });
 
-    // File input change
+    // FILE INPUT CHANGE
     imageInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             showPreview(e.target.files[0]);

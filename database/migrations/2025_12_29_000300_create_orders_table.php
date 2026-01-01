@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('status')->default('pending');
             $table->decimal('total', 10, 2);
             $table->string('currency', 3)->default('PHP');
+            $table->text('instructions')->nullable();
             $table->timestamp('placed_at');
             $table->timestamps();
         });

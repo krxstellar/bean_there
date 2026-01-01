@@ -17,13 +17,13 @@
         text-align: left;
     }
 
-    .category-header {
+    .sub-category {
         border-bottom: 1px solid rgba(74, 44, 42, 0.2);
         margin-bottom: 35px;
         padding-bottom: 10px;
     }
 
-    .category-header h2 {
+    .sub-category h2 {
         font-family: 'Cooper Black', serif;
         font-size: 1.8rem;
         color: #4A2C2A;
@@ -111,36 +111,75 @@
 <div class="pastries-section">
     <h1 class="page-title">Pastries</h1>
 
-    <div class="category-section">
-        <div class="category-header">
-            <h2>{{ $category->name ?? 'Menu' }}</h2>
-        </div>
+    {{-- CHECK IF THERE ARE ANY PRODUCTS --}}
+    @php
+        $hasProducts = ($subcategories ?? collect())->flatMap->products->isNotEmpty() || ($productsWithoutSubcategory ?? collect())->isNotEmpty();
+    @endphp
 
-        <div class="product-grid">
-            @forelse($products ?? [] as $p)
-                <div class="product-card">
-                    <a href="{{ route('products.show', $p->slug) }}">
-                        <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
-                    </a>
-                    <div class="product-info">
-                        <h3>{{ $p->name }}</h3>
-                        <p>{{ number_format($p->price, 2) }} PHP</p>
-                        <form action="{{ route('cart.add') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $p->id }}">
-                            <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
-                            <button type="submit" class="add-to-cart-btn">Add to cart</button>
-                        </form>
+    @if($hasProducts)
+        {{-- PRODUCTS WITHOUT SUBCATEGORY --}}
+        @if(($productsWithoutSubcategory ?? collect())->isNotEmpty())
+            <div class="category-section">
+                <div class="product-grid">
+                    @foreach($productsWithoutSubcategory as $p)
+                        <div class="product-card">
+                            <a href="{{ route('products.show', $p->slug) }}">
+                                <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                            </a>
+                            <div class="product-info">
+                                <h3>{{ $p->name }}</h3>
+                                <p>{{ number_format($p->price, 2) }} PHP</p>
+                                <form action="{{ route('cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $p->id }}">
+                                    <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                                    <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- PRODUCTS GROUPED BY SUBCATEGORY --}}
+        @foreach($subcategories ?? [] as $subcategory)
+            @if($subcategory->products->isNotEmpty())
+                <div class="category-section">
+                    <div class="sub-category">
+                        <h2>{{ $subcategory->name }}</h2>
+                    </div>
+                    <div class="product-grid">
+                        @foreach($subcategory->products as $p)
+                            <div class="product-card">
+                                <a href="{{ route('products.show', $p->slug) }}">
+                                    <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                                </a>
+                                <div class="product-info">
+                                    <h3>{{ $p->name }}</h3>
+                                    <p>{{ number_format($p->price, 2) }} PHP</p>
+                                    <form action="{{ route('cart.add') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $p->id }}">
+                                        <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                                        <button type="submit" class="add-to-cart-btn">Add to cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-            @empty
-                <div id="no-results-container" style="display:block">
-                    <h2>No pastries found</h2>
-                    <p style="color: #9B8173;">Please check back later.</p>
-                </div>
-            @endforelse
+            @endif
+        @endforeach
+    @else
+        {{-- NO PRODUCTS FOUND --}}
+        <div style="display:flex; justify-content:center; align-items:center; min-height:30vh; width:100%;">
+            <div style="text-align:center;">
+                <h2>No pastries found</h2>
+                <p style="color: #9B8173;">Please check back later.</p>
+            </div>
         </div>
-    </div>
+    @endif
 </div>
 
 <script>
