@@ -165,9 +165,12 @@
             <a href="#" class="nav-item">
                 <i class="fa-solid fa-gear"></i> Settings
             </a>
-            <a href="/test-admin" class="nav-item" style="opacity: 0.5;">
-                <i class="fa-solid fa-arrow-left"></i> Back to Admin
-            </a>
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                @csrf
+                <button type="submit" class="nav-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
         </div>
     </div>
 
@@ -184,7 +187,7 @@
 
             <div class="user-profile">
                 <div style="text-align: right;">
-                    <div class="user-name">Staff Name</div>
+                    <div class="user-name">{{ Auth::user()->name ?? 'Staff' }}</div>
                     <div class="user-role">Order Processor</div>
                 </div>
                 <i class="fa-solid fa-circle-user" style="font-size: 32px; color: var(--staff-accent);"></i>
