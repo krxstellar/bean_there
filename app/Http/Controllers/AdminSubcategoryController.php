@@ -39,7 +39,20 @@ class AdminSubcategoryController extends Controller
             $validated['slug'] .= '-' . ($count + 1);
         }
 
-        Subcategory::create($validated);
+        $subcategory = Subcategory::create($validated);
+
+        // RETURN JSON FOR AJAX REQUESTS
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'subcategory' => [
+                    'id' => $subcategory->id,
+                    'name' => $subcategory->name,
+                    'category_id' => $subcategory->category_id
+                ]
+            ]);
+        }
+
         return redirect()->route('admin.subcategories.index')->with('success', 'Subcategory created successfully.');
     }
 

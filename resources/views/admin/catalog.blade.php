@@ -7,7 +7,7 @@
             <p style="color:#888; margin:5px 0 0;">Manage your products</p>
         </div>
         
-        <a href="{{ route('admin.products.create') }}" style="background-color: #B07051; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration:none;">
+        <a href="{{ route('admin.products.create') }}" style="background-color: #B07051; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none;">
             <i class="fa-solid fa-plus"></i> Add New Product
         </a>
     </div>
@@ -66,7 +66,7 @@
             </div>
         </div>
         @empty
-            <p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No products yet. <a href="{{ route('admin.products.create') }}" style="color:#B07051;">Add one now</a>.</p>
+            <p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No products yet.</p>
         @endforelse
     </div>
     
