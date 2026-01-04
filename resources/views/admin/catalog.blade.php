@@ -52,15 +52,10 @@
             <div class="product-info">
                 <h3>{{ $p->name }}</h3>
                 <p class="category-tag">{{ $p->category->name ?? 'Uncategorized' }}</p>
-                <div class="price-row">
+                    <div class="price-row">
                     <span>₱{{ number_format($p->price, 2) }}</span>
                     <div class="action-btns">
-                        <a class="edit" href="{{ route('admin.products.edit', $p) }}" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-pen"></i></a>
-                        <form method="POST" action="{{ route('admin.products.destroy', $p) }}" onsubmit="return confirm('Delete this product?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="delete" type="submit"><i class="fa-solid fa-trash"></i></button>
-                        </form>
+                        <a class="view" href="{{ route('admin.products.show', $p) }}" title="View" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </div>
             </div>
@@ -145,5 +140,17 @@
             transition: 0.2s;
             text-decoration: none;
         }
+        .action-btns a.view {
+            background: #F8F9FA;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #4A2C2A;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .action-btns a.view:hover { background: #E5F0FF; color: #1890FF; }
     </style>
 @endsection

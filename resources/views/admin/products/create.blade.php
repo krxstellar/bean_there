@@ -26,7 +26,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Price (₱)</label>
-                    <input type="number" step="0.01" name="price" value="{{ old('price') }}" placeholder="0.00" required>
+                    <input type="number" step="0.01" min="0" name="price" id="price" inputmode="decimal" value="{{ old('price') }}" placeholder="0.00" required>
                     @error('price')<div class="error-msg">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group">
@@ -85,6 +85,7 @@
                 <div id="image-preview" style="display: none; margin-top: 10px; text-align: center;">
                     <img id="preview-img" src="" alt="Preview">
                 </div>
+                <div id="image-error" class="error-msg" style="display: none; margin-top: 8px;"></div>
                 @error('image')<div class="error-msg">{{ $message }}</div>@enderror
             </div>
 
@@ -478,7 +479,22 @@
     });
 
     function showPreview(file) {
+        const errDiv = document.getElementById('image-error');
+        if (!errDiv) return;
+        errDiv.style.display = 'none';
+        errDiv.textContent = '';
+
         if (file && file.type.startsWith('image/')) {
+            const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+            if (file.size > MAX_BYTES) {
+                imagePreview.style.display = 'none';
+                uploadText.textContent = 'Click to upload or drag image';
+                imageInput.value = '';
+                errDiv.textContent = 'File is too large. Maximum size is 5 MB.';
+                errDiv.style.display = 'block';
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImg.src = e.target.result;
@@ -608,5 +624,34 @@
             window.location.href = '{{ route("admin.catalog") }}';
         }
     });
+
+    // PREVENT DASH ('-') IN PRICE INPUT
+    const priceInput = document.getElementById('price');
+    if (priceInput) {
+        priceInput.addEventListener('keydown', (e) => {
+            if (e.key === '-' || e.key === 'Subtract' || e.keyCode === 189 || e.keyCode === 109) {
+                e.preventDefault();
+            }
+        });
+
+        // Sanitize any existing or programmatic input to remove '-'
+        priceInput.addEventListener('input', (e) => {
+            const sanitized = e.target.value.replace(/-/g, '');
+            if (sanitized !== e.target.value) e.target.value = sanitized;
+        });
+
+        // Block pasting '-' and sanitize pasted text
+        priceInput.addEventListener('paste', (e) => {
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            if (paste.includes('-')) {
+                e.preventDefault();
+                const sanitized = paste.replace(/-/g, '');
+                const start = e.target.selectionStart || 0;
+                const end = e.target.selectionEnd || 0;
+                const val = e.target.value;
+                e.target.value = val.slice(0, start) + sanitized + val.slice(end);
+            }
+        });
+    }
 </script>
 @endsection
