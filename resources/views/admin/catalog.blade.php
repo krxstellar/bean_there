@@ -7,7 +7,7 @@
             <p style="color:#888; margin:5px 0 0;">Manage your products</p>
         </div>
         
-        <a href="{{ route('admin.products.create') }}" style="background-color: #B07051; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration:none;">
+        <a href="{{ route('admin.products.create') }}" style="background-color: #B07051; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none;">
             <i class="fa-solid fa-plus"></i> Add New Product
         </a>
     </div>
@@ -52,21 +52,16 @@
             <div class="product-info">
                 <h3>{{ $p->name }}</h3>
                 <p class="category-tag">{{ $p->category->name ?? 'Uncategorized' }}</p>
-                <div class="price-row">
+                    <div class="price-row">
                     <span>₱{{ number_format($p->price, 2) }}</span>
                     <div class="action-btns">
-                        <a class="edit" href="{{ route('admin.products.edit', $p) }}" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-pen"></i></a>
-                        <form method="POST" action="{{ route('admin.products.destroy', $p) }}" onsubmit="return confirm('Delete this product?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="delete" type="submit"><i class="fa-solid fa-trash"></i></button>
-                        </form>
+                        <a class="view" href="{{ route('admin.products.show', $p) }}" title="View" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-eye"></i></a>
                     </div>
                 </div>
             </div>
         </div>
         @empty
-            <p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No products yet. <a href="{{ route('admin.products.create') }}" style="color:#B07051;">Add one now</a>.</p>
+            <p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No products yet.</p>
         @endforelse
     </div>
     
@@ -145,5 +140,17 @@
             transition: 0.2s;
             text-decoration: none;
         }
+        .action-btns a.view {
+            background: #F8F9FA;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #4A2C2A;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .action-btns a.view:hover { background: #E5F0FF; color: #1890FF; }
     </style>
 @endsection

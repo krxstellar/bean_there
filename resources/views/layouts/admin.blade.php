@@ -184,7 +184,7 @@
         <div class="nav-group" style="margin-top: auto;">
             <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                 @csrf
-                <button type="submit" class="nav-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left; color: #c0392b;">
+                <button type="submit" class="nav-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left; color: #c0392b; font-family: Poppins;">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </button>
             </form>
