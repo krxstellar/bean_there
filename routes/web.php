@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminOrdersController;
 use App\Http\Controllers\StaffOrdersController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Product;
+use App\Models\Order;
 
 // CUSTOMER ROUTES
 Route::get('/', function () {
@@ -79,7 +80,15 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 // ADMIN MANAGEMENT ROUTES (PROTECTED BY ADMIN ROLE)
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/test-admin', function () {
-        return view('admin.dashboard');
+        $todaySales = Order::whereDate('placed_at', now()->toDateString())
+            ->where('status', 'completed')
+            ->sum('total');
+
+        $pendingOrders = Order::where('status', 'pending')->count();
+
+        $outOfStock = Product::where('is_active', false)->count();
+
+        return view('admin.dashboard', compact('todaySales', 'pendingOrders', 'outOfStock'));
     });
 
     Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
