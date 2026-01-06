@@ -205,7 +205,9 @@
 <div class="orders-section">
     <div class="orders-header">
         <h1 class="orders-title">Your Orders</h1>
-        <a href="{{ route('welcome') }}" class="continue-shopping">Continue Shopping</a>
+        @if(!$orders->isEmpty())
+            <a href="{{ route('welcome') }}" class="continue-shopping">Continue Shopping</a>
+        @endif
     </div>
 
     @if($orders->isEmpty())
