@@ -12,9 +12,15 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('status')->default('pending');
             $table->decimal('total', 10, 2);
-            $table->string('currency', 3)->default('PHP');
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->string('discount_status')->default('none'); // none|pending|approved|rejected
+            $table->text('discount_approval_note')->nullable();
+            $table->foreignId('discount_approved_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('discount_approved_at')->nullable();
+            $table->decimal('paid_total', 10, 2)->nullable();
             $table->text('instructions')->nullable();
             $table->timestamp('placed_at');
+            $table->string('discount_proof')->nullable(); 
             $table->timestamps();
         });
     }

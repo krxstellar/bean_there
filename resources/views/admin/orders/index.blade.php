@@ -21,6 +21,7 @@
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Customer</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Discount</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Actions</th>
             </tr>
         </thead>
@@ -41,10 +42,32 @@
                         {{ ucfirst($o->status) }}
                     </span>
                 </td>
-                <td style="padding:16px 12px; font-weight:600;">₱{{ number_format($o->total, 2) }}</td>
+                @php
+                    $rowTotal = $o->paid_total ?? (($o->discount_status ?? '') === 'approved' ? $o->total_after_discount : $o->total);
+                    $original = $o->total;
+                @endphp
+                <td style="padding:16px 12px; font-weight:600;">
+                    @if(number_format($rowTotal, 2) !== number_format($original, 2))
+                        <span style="color:#888; text-decoration:line-through; margin-right:6px;">₱{{ number_format($original, 2) }}</span>
+                        <span style="color:#4A2C2A; font-weight:700;">₱{{ number_format($rowTotal, 2) }}</span>
+                    @else
+                        ₱{{ number_format($rowTotal, 2) }}
+                    @endif
+                </td>
                 <td style="padding:16px 12px;">{{ $o->user->name ?? 'Guest' }}</td>
                 <td style="padding:16px 12px;">{{ $o->items->count() }} item(s)</td>
                 <td style="padding:16px 12px; color:#666;">{{ $o->placed_at?->format('M d, Y') }}</td>
+                <td style="padding:16px 12px;">
+                    @if($o->discount_proof)
+                        @if(($o->discount_status ?? 'none') === 'pending')
+                            <span style="color:#D48806; font-weight:600;">Pending</span>
+                        @else
+                            <span style="color:#4A2C2A; font-weight:600;">Applied</span>
+                        @endif
+                    @else
+                        <span style="color:#888;">None</span>
+                    @endif
+                </td>
                 <td style="padding:16px 12px;">
                     <a href="{{ route('admin.orders.show', $o) }}" 
                        style="background:#4A2C2A; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:500;">
@@ -53,7 +76,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" style="padding:40px; text-align:center; color:#999;">No orders yet.</td></tr>
+            <tr><td colspan="8" style="padding:40px; text-align:center; color:#999;">No orders yet.</td></tr>
             @endforelse
         </tbody>
     </table>

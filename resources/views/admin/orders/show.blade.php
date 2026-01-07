@@ -49,9 +49,46 @@
         {{-- Order Info --}}
         <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee;">
             <h3 style="margin-top:0; color:#4A2C2A;">Order Details</h3>
-            <p><strong>Total:</strong> ₱{{ number_format($order->total, 2) }}</p>
+            @php
+                $displayTotal = $order->paid_total ?? (($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total);
+                $originalTotal = $order->total;
+            @endphp
+            <p><strong>Total:</strong>
+                @if(number_format($displayTotal, 2) !== number_format($originalTotal, 2))
+                    <span style="color:#888; text-decoration:line-through; margin-right:8px;">₱{{ number_format($originalTotal, 2) }}</span>
+                    <span style="color:#4A2C2A; font-weight:700;">₱{{ number_format($displayTotal, 2) }}</span>
+                @else
+                    ₱{{ number_format($displayTotal, 2) }}
+                @endif
+            </p>
             <p><strong>Customer:</strong> {{ $order->user->name ?? 'Guest' }} ({{ $order->user->email ?? '-' }})</p>
             <p><strong>Placed:</strong> {{ $order->placed_at?->format('M d, Y h:i A') }}</p>
+            @if($order->discount_proof)
+                <p><strong>Discount:</strong> <span style="color:#4A2C2A; font-weight:600;">Applied</span>
+                    <a href="{{ asset('storage/' . $order->discount_proof) }}" target="_blank" style="color:#1890FF; text-decoration:underline; margin-left:8px;">View Proof</a>
+                </p>
+                @if($order->discount_status === 'pending')
+                    <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                        <form action="{{ route('admin.orders.discount.approve', $order) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="note" value="Approved by admin">
+                            <button type="submit" style="background:#08979C; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; font-weight:600;">Approve</button>
+                        </form>
+
+                        <form action="{{ route('admin.orders.discount.reject', $order) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="note" value="Rejected by admin">
+                            <button type="submit" style="background:#CF1322; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; font-weight:600;">Reject</button>
+                        </form>
+                    </div>
+                @else
+                    <p><strong>Discount:</strong> <span style="color:#888;">None</span></p>
+                @endif
+            @else
+                <p><strong>Discount:</strong> <span style="color:#888;">None</span></p>
+            @endif
         </div>
 
         {{-- Shipping Address --}}
@@ -93,7 +130,14 @@
             <tfoot>
                 <tr style="border-top:2px solid #4A2C2A;">
                     <td colspan="3" style="padding:14px 8px; text-align:right; font-weight:700;">Total:</td>
-                    <td style="padding:14px 8px; font-weight:700; font-size:18px;">₱{{ number_format($order->total, 2) }}</td>
+                    <td style="padding:14px 8px; font-weight:700; font-size:18px;">
+                        @if(number_format($displayTotal, 2) !== number_format($originalTotal, 2))
+                            <span style="color:#888; text-decoration:line-through; margin-right:8px;">₱{{ number_format($originalTotal, 2) }}</span>
+                            <span style="color:#4A2C2A; font-weight:700;">₱{{ number_format($displayTotal, 2) }}</span>
+                        @else
+                            ₱{{ number_format($displayTotal, 2) }}
+                        @endif
+                    </td>
                 </tr>
             </tfoot>
         </table>

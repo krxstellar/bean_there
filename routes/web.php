@@ -94,6 +94,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
     Route::get('/admin/orders/{order}', [AdminOrdersController::class, 'show'])->name('admin.orders.show');
     Route::patch('/admin/orders/{order}/status', [AdminOrdersController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    Route::patch('/admin/orders/{order}/discount/approve', [AdminOrdersController::class, 'approveDiscount'])->name('admin.orders.discount.approve');
+    Route::patch('/admin/orders/{order}/discount/reject', [AdminOrdersController::class, 'rejectDiscount'])->name('admin.orders.discount.reject');
 
     Route::get('/admin/catalog', [AdminProductController::class, 'index'])->name('admin.catalog');
 
