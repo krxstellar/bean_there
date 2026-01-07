@@ -7,15 +7,15 @@
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 50px;">
         <div style="background: #F8F9FA; padding: 30px; border-radius: 15px; border: 1px solid #EEE;">
             <small>TODAY'S SALES</small>
-            <h2 style="margin: 10px 0;">₱ 12,450.00</h2>
+            <h2 style="margin: 10px 0;">₱ {{ number_format($todaySales ?? 0, 2) }}</h2>
         </div>
         <div style="background: #F8F9FA; padding: 30px; border-radius: 15px; border: 1px solid #EEE;">
             <small>PENDING ORDERS</small>
-            <h2 style="margin: 10px 0;">8 Orders</h2>
+            <h2 style="margin: 10px 0;">{{ $pendingOrders ?? 0 }} Orders</h2>
         </div>
         <div style="background: #F8F9FA; padding: 30px; border-radius: 15px; border: 1px solid #EEE;">
             <small>OUT OF STOCK</small>
-            <h2 style="margin: 10px 0; color: #E74C3C;">2 Items</h2>
+            <h2 style="margin: 10px 0; color: {{ ($outOfStock ?? 0) > 0 ? '#E74C3C' : '#333' }};">{{ $outOfStock ?? 0 }} Items</h2>
         </div>
     </div>
 
