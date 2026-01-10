@@ -8,10 +8,12 @@ use App\Http\Controllers\AdminSubcategoryController;
 use App\Http\Controllers\StaffProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminOrdersController;
+use App\Http\Controllers\AdminPaymentsController;
 use App\Http\Controllers\StaffOrdersController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Payment;
 
 // CUSTOMER ROUTES
 Route::get('/', function () {
@@ -84,11 +86,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             ->where('status', 'completed')
             ->sum('total');
 
+        // Sum of payments that were marked paid today (this aligns with payments/total revenue)
+        $todayRevenue = Payment::whereDate('paid_at', now()->toDateString())
+            ->where('status', 'paid')
+            ->sum('amount');
+
         $pendingOrders = Order::where('status', 'pending')->count();
 
         $outOfStock = Product::where('is_active', false)->count();
 
-        return view('admin.dashboard', compact('todaySales', 'pendingOrders', 'outOfStock'));
+        return view('admin.dashboard', compact('todaySales', 'todayRevenue', 'pendingOrders', 'outOfStock'));
     });
 
     Route::get('/admin/orders', [AdminOrdersController::class, 'index'])->name('admin.orders');
@@ -99,9 +106,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/catalog', [AdminProductController::class, 'index'])->name('admin.catalog');
 
-    Route::get('/admin/payments', function () {
-        return view('admin.payments');
-    })->name('admin.payments');
+    Route::get('/admin/payments', [AdminPaymentsController::class, 'index'])->name('admin.payments');
 
     Route::get('/admin/customers', function () {
         return view('admin.customers');

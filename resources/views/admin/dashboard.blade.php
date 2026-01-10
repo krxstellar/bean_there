@@ -7,7 +7,7 @@
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 50px;">
         <div style="background: #F8F9FA; padding: 30px; border-radius: 15px; border: 1px solid #EEE;">
             <small>TODAY'S SALES</small>
-            <h2 style="margin: 10px 0;">₱ {{ number_format($todaySales ?? 0, 2) }}</h2>
+            <h2 style="margin: 10px 0;">₱ {{ number_format($todayRevenue ?? 0, 2) }}</h2>
         </div>
         <div style="background: #F8F9FA; padding: 30px; border-radius: 15px; border: 1px solid #EEE;">
             <small>PENDING ORDERS</small>

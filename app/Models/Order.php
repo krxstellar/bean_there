@@ -28,13 +28,11 @@ class Order extends Model
         'discount_approved_by',
         'discount_approved_at',
         'discount_approval_note',
-        'paid_total',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
         'discount_amount' => 'decimal:2',
-        'paid_total' => 'decimal:2',
         'placed_at' => 'datetime',
         'discount_approved_at' => 'datetime',
     ];
@@ -65,7 +63,6 @@ class Order extends Model
         $this->discount_approved_by = $byUser->id ?? null;
         $this->discount_approved_at = now();
         $this->discount_approval_note = $note;
-        $this->paid_total = $this->total_after_discount;
         $this->save();
 
         return true;
@@ -81,7 +78,6 @@ class Order extends Model
         $this->discount_approved_by = $byUser->id ?? null;
         $this->discount_approved_at = now();
         $this->discount_approval_note = $note;
-        $this->paid_total = null;
         $this->save();
 
         return true;
@@ -90,6 +86,16 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function latestPayment(): HasOne
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
     }
 
     public function user(): BelongsTo

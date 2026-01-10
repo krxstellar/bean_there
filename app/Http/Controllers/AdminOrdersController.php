@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Address;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class AdminOrdersController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'items.product'])
+        $orders = Order::with(['user', 'items.product', 'latestPayment'])
             ->orderByDesc('id')
             ->paginate(20);
 
@@ -19,7 +20,7 @@ class AdminOrdersController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product']);
+        $order->load(['user', 'items.product', 'latestPayment']);
         $shipping = Address::where('order_id', $order->id)
             ->where('type', 'shipping')
             ->first();
@@ -37,9 +38,40 @@ class AdminOrdersController extends Controller
             'status' => 'required|in:' . implode(',', Order::STATUSES),
         ]);
 
-        $order->update(['status' => $validated['status']]);
+        $newStatus = $validated['status'];
+        $oldStatus = $order->status;
 
-        return back()->with('success', 'Order status updated to ' . ucfirst($validated['status']));
+        // Update status; when marking completed, create a Payment record (payments are the source of truth).
+        $order->status = $newStatus;
+
+        if ($newStatus === 'completed') {
+            // create payment record if none exists for this order
+            if (!$order->payments()->where('status', 'paid')->exists()) {
+                $amount = ($order->discount_status ?? '') === 'approved'
+                    ? $order->total_after_discount
+                    : $order->total;
+
+                $payment = Payment::create([
+                    'order_id' => $order->id,
+                    'amount' => $amount,
+                    'method' => 'cod',
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                ]);
+
+                $payment->transaction_id = 'TXN-'.str_pad($payment->id, 6, '0', STR_PAD_LEFT);
+                $payment->save();
+            }
+        }
+
+        // If status was completed but is being changed away, remove payment record(s).
+        if ($oldStatus === 'completed' && $newStatus !== 'completed') {
+            $order->payments()->where('status', 'paid')->delete();
+        }
+
+        $order->save();
+
+        return back()->with('success', 'Order status updated to ' . ucfirst($newStatus));
     }
 
     public function approveDiscount(Request $request, Order $order)

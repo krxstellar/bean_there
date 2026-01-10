@@ -43,7 +43,7 @@
                     </span>
                 </td>
                 @php
-                    $rowTotal = $o->paid_total ?? (($o->discount_status ?? '') === 'approved' ? $o->total_after_discount : $o->total);
+                    $rowTotal = $o->latestPayment->amount ?? (($o->discount_status ?? '') === 'approved' ? $o->total_after_discount : $o->total);
                     $original = $o->total;
                 @endphp
                 <td style="padding:16px 12px; font-weight:600;">

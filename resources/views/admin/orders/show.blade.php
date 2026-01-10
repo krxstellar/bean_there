@@ -50,7 +50,7 @@
         <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee;">
             <h3 style="margin-top:0; color:#4A2C2A;">Order Details</h3>
             @php
-                $displayTotal = $order->paid_total ?? (($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total);
+                $displayTotal = $order->latestPayment->amount ?? (($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total);
                 $originalTotal = $order->total;
             @endphp
             <p><strong>Total:</strong>
