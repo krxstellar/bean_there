@@ -124,7 +124,7 @@
                     @foreach($productsWithoutSubcategory as $p)
                         <div class="product-card">
                             <a href="{{ route('products.show', $p->slug) }}">
-                                <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                                <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/Photo Unavailable..png') }}" class="product-image" alt="{{ $p->name }}">
                             </a>
                             <div class="product-info">
                                 <h3>{{ $p->name }}</h3>
@@ -132,7 +132,11 @@
                                 <form action="{{ route('cart.add') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ $p->id }}">
-                                    <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                                    <div class="qty-controls" style="display:inline-flex; align-items:center; gap:8px; margin-right:8px;">
+                                        <button type="button" class="qty-decrement" aria-label="Decrease" style="background:transparent; border:1.5px solid #4A2C2A; color:#4A2C2A; padding:6px 10px; border-radius:8px; cursor:pointer;">-</button>
+                                        <input type="number" name="quantity" value="1" min="1" class="qty-input" style="width: 70px; text-align:center;">
+                                        <button type="button" class="qty-increment" aria-label="Increase" style="background:transparent; border:1.5px solid #4A2C2A; color:#4A2C2A; padding:6px 10px; border-radius:8px; cursor:pointer;">+</button>
+                                    </div>
                                     <button type="submit" class="add-to-cart-btn">Add to cart</button>
                                 </form>
                             </div>
@@ -153,7 +157,7 @@
                         @foreach($subcategory->products as $p)
                             <div class="product-card">
                                 <a href="{{ route('products.show', $p->slug) }}">
-                                    <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/crossant.jpg') }}" class="product-image" alt="{{ $p->name }}">
+                                    <img src="{{ $p->image_url ? asset($p->image_url) : asset('images/Photo Unavailable..png') }}" class="product-image" alt="{{ $p->name }}">
                                 </a>
                                 <div class="product-info">
                                     <h3>{{ $p->name }}</h3>
@@ -161,7 +165,11 @@
                                     <form action="{{ route('cart.add') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="id" value="{{ $p->id }}">
-                                        <input type="number" name="quantity" value="1" min="1" style="width: 70px; margin-right: 8px;">
+                                        <div class="qty-controls" style="display:inline-flex; align-items:center; gap:8px; margin-right:8px;">
+                                            <button type="button" class="qty-decrement" aria-label="Decrease" style="background:transparent; border:1.5px solid #4A2C2A; color:#4A2C2A; padding:6px 10px; border-radius:8px; cursor:pointer;">-</button>
+                                            <input type="number" name="quantity" value="1" min="1" class="qty-input" style="width: 70px; text-align:center;">
+                                            <button type="button" class="qty-increment" aria-label="Increase" style="background:transparent; border:1.5px solid #4A2C2A; color:#4A2C2A; padding:6px 10px; border-radius:8px; cursor:pointer;">+</button>
+                                        </div>
                                         <button type="submit" class="add-to-cart-btn">Add to cart</button>
                                     </form>
                                 </div>

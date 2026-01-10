@@ -287,6 +287,51 @@
             .footer-divider { display: none; }
             .footer-socials { justify-content: center; }
         }
+
+
+        .qty-input {
+            -moz-appearance: textfield;
+            -webkit-appearance: none;
+            appearance: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(74,44,42,0.2);
+            background: #fff;
+            text-align: center;
+        }
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .qty-controls { display: flex; align-items: center; gap: 8px; width: 220px; margin: 0 auto; height: 44px; box-sizing: border-box; }
+        .qty-controls .qty-decrement,
+        .qty-controls .qty-increment {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: 8px;
+            border: 1.5px solid #4A2C2A;
+            background: transparent;
+            color: #4A2C2A;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            line-height: 1;
+            box-sizing: border-box;
+        }
+        .qty-controls .qty-input { flex: 1; min-width: 50px; max-width: 120px; height: 44px; box-sizing: border-box; font-size: 16px; }
+        .qty-controls + .add-to-cart-btn {
+            display: block;
+            margin: 8px auto 0 auto;
+            width: 220px;
+            height: 44px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -710,6 +755,37 @@
                 navSearchInput.classList.add('active');
                 navSearchInput.value = searchQuery;
                 setTimeout(() => navSearchInput.dispatchEvent(new Event('input')), 100);
+            }
+        });
+    </script>
+    <script>
+        // Quantity plus/minus handlers for add-to-cart forms
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('qty-increment') || e.target.classList.contains('qty-decrement')) {
+                // find the closest form and its .qty-input
+                const form = e.target.closest('form');
+                const input = form ? form.querySelector('.qty-input') : e.target.parentElement.querySelector('.qty-input');
+                if (!input) return;
+                const step = 1;
+                const min = parseInt(input.getAttribute('min')) || 1;
+                let value = parseInt(input.value) || min;
+                if (e.target.classList.contains('qty-increment')) {
+                    value = value + step;
+                } else {
+                    value = Math.max(min, value - step);
+                }
+                input.value = value;
+                // trigger input event in case other listeners rely on it
+                input.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // Ensure manual edits respect min
+        document.addEventListener('input', function(e) {
+            if (e.target.classList && e.target.classList.contains('qty-input')) {
+                const min = parseInt(e.target.getAttribute('min')) || 1;
+                let val = parseInt(e.target.value) || min;
+                if (val < min) e.target.value = min;
             }
         });
     </script>
