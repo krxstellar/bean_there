@@ -2,32 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class AdminPaymentsController extends Controller
+class ReceiptController extends Controller
 {
-    public function index(Request $request)
-    {
-        // Use Payment model (only paid ones) to render transactions.
-        $payments = Payment::with(['order.user'])
-            ->where('status', 'paid')
-            ->orderByDesc('paid_at')
-            ->paginate(20);
-
-        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
-        $completedCount = Payment::where('status', 'paid')->count();
-
-        return view('admin.payments', compact('payments', 'totalRevenue', 'completedCount'));
-    }
-
-    public function generateReceipt(Payment $payment)
+    public function download(Payment $payment)
     {
         $payment->load(['order.user', 'order.items']);
 
-        // Require barryvdh/laravel-dompdf to generate PDF
+        $user = auth()->user();
+        if (! $user) {
+            abort(403, 'Not authenticated');
+        }
+
+        $isOwner = $payment->order && $payment->order->user && $payment->order->user->id === $user->id;
+        $isAdmin = method_exists($user, 'hasRole') && $user->hasRole('admin');
+
+        if (! ($isOwner || $isAdmin)) {
+            abort(403, 'USER DOES NOT HAVE THE RIGHT ROLES.');
+        }
+
         if (! class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
             abort(500, 'PDF generator not installed. Run: composer require barryvdh/laravel-dompdf');
         }

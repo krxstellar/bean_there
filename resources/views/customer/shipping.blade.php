@@ -104,6 +104,7 @@
                     <div class="toggle-circle"></div>
                 </div>
                 <span class="toggle-label">Apply for PWD/Senior Citizen Discount</span>
+                <input type="hidden" name="apply_discount" id="apply-discount" value="{{ old('apply_discount', 0) }}">
             </div>
             <div class="form-group" id="discount-upload" style="display: none;">
                 <label>Upload Proof (JPG/PNG, max 5MB) *</label>
@@ -122,21 +123,29 @@
         const discountFile = document.getElementById('discount-file');
         const placeOrderBtn = document.getElementById('place-order-btn');
         const fileError = document.getElementById('file-error');
+        const applyDiscountInput = document.getElementById('apply-discount');
+
+        // initialize state from old input (if any)
+        if (applyDiscountInput && applyDiscountInput.value === '1') {
+            discountToggle.classList.add('active');
+            discountUpload.style.display = 'block';
+            placeOrderBtn.disabled = true; // require valid upload before enabling
+        }
 
         discountToggle.addEventListener('click', function () {
             this.classList.toggle('active');
-            if (this.classList.contains('active')) {
+            const active = this.classList.contains('active');
+            applyDiscountInput.value = active ? '1' : '0';
+            if (active) {
                 discountUpload.style.display = 'block';
-                document.getElementById('discount-amount-group').style.display = 'block';
                 placeOrderBtn.disabled = true;
+                discountFile.required = true;
             } else {
                 discountUpload.style.display = 'none';
-                document.getElementById('discount-amount-group').style.display = 'none';
                 placeOrderBtn.disabled = false;
                 fileError.style.display = 'none';
-                amountError.style.display = 'none';
                 discountFile.value = '';
-                discountAmount.value = '';
+                discountFile.required = false;
             }
         });
 
@@ -149,13 +158,6 @@
                 fileError.style.display = 'block';
                 placeOrderBtn.disabled = true;
             }
-        });
-
-        // Ensure the button visually reflects its disabled state
-        placeOrderBtn.addEventListener('disabled', function () {
-            this.style.backgroundColor = '#bbb';
-            this.style.cursor = 'not-allowed';
-            this.style.opacity = '0.6';
         });
     });
 </script>

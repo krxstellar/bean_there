@@ -89,7 +89,7 @@
     .status-pending { background-color: #F5E6D3; color: #8B6914; }
     .status-processing { background-color: #D4EDDA; color: #155724; }
     .status-shipped { background-color: #CCE5FF; color: #004085; }
-    .status-delivered { background-color: #C3E6CB; color: #155724; }
+    .status-completed { background-color: #C3E6CB; color: #155724; }
     .status-cancelled { background-color: #F8D7DA; color: #721C24; }
 
     .items-table {
@@ -305,10 +305,6 @@
                     <span>Subtotal</span>
                     <span>₱{{ number_format($order->total, 2) }}</span>
                 </div>
-                <div class="summary-row">
-                    <span>Shipping</span>
-                    <span>FREE</span>
-                </div>
                 <div class="summary-row total">
                     <span>Total</span>
                     <span>₱{{ number_format($order->total, 2) }}</span>
@@ -327,8 +323,8 @@
                             @case('shipped')
                                 Your order has been shipped!
                                 @break
-                            @case('delivered')
-                                Your order has been delivered.
+                            @case('completed')
+                                Your order has been completed.
                                 @break
                             @case('cancelled')
                                 Your order was cancelled.
@@ -339,7 +335,17 @@
                     </p>
                 </div>
 
-                <a href="{{ route('orders.index') }}" class="back-btn">Back to Orders</a>
+                @php
+                    use Illuminate\Support\Facades\Storage;
+                    $latestPayment = $order->latestPayment;
+                    $receiptExists = $latestPayment && Storage::exists('receipts/'.$latestPayment->id.'.pdf');
+                @endphp
+
+                @if($receiptExists)
+                    <a href="{{ route('receipts.download', $latestPayment) }}" class="back-btn">Download Receipt</a>
+                @endif
+
+                <a href="{{ route('orders.index') }}" class="back-btn" style="margin-top:10px;">Back to Orders</a>
             </div>
         </div>
     </div>

@@ -20,10 +20,10 @@
                 <tr style="border-bottom: 2px solid #F0F2F5; color: #AEA9A0; font-size: 13px; text-transform: uppercase;">
                     <th style="padding: 20px;">Transaction ID</th>
                     <th style="padding: 20px;">Order No.</th>
-                    
                     <th style="padding: 20px;">Amount</th>
                     <th style="padding: 20px;">Status</th>
                     <th style="padding: 20px;">Date</th>
+                    <th style="padding: 20px;">Receipts</th>
                 </tr>
             </thead>
             <tbody style="font-size: 14px; color: #4A2C2A;">
@@ -40,10 +40,13 @@
                             @endif
                         </td>
                         <td style="padding: 20px; color: #666;">{{ optional($payment->paid_at)->format('M d, Y') }}</td>
+                        <td style="padding: 20px;">
+                            <a href="{{ url('admin/payments/'.$payment->id.'/receipt') }}" style="background: #4A2C2A; color: #FFF; padding: 8px 12px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 13px;">Generate</a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="padding:20px; text-align:center; color:#999;">No payments found.</td>
+                        <td colspan="6" style="padding:20px; text-align:center; color:#999;">No payments found.</td>
                     </tr>
                 @endforelse
             </tbody>

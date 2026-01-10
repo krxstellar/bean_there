@@ -63,6 +63,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
 
+// Receipt download route (for customers and admins)
+Route::get('/receipts/{payment}', [App\Http\Controllers\ReceiptController::class, 'download'])
+    ->name('receipts.download')
+    ->middleware('auth');
+
 // PRODUCT DETAIL (CUSTOMER)
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
@@ -86,7 +91,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             ->where('status', 'completed')
             ->sum('total');
 
-        // Sum of payments that were marked paid today (this aligns with payments/total revenue)
         $todayRevenue = Payment::whereDate('paid_at', now()->toDateString())
             ->where('status', 'paid')
             ->sum('amount');
@@ -107,6 +111,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/catalog', [AdminProductController::class, 'index'])->name('admin.catalog');
 
     Route::get('/admin/payments', [AdminPaymentsController::class, 'index'])->name('admin.payments');
+    Route::get('/admin/payments/{payment}/receipt', [AdminPaymentsController::class, 'generateReceipt'])->name('admin.payments.receipt');
 
     Route::get('/admin/customers', function () {
         return view('admin.customers');

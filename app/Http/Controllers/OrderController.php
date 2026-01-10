@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Address;
 use App\Models\Product;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -54,7 +55,8 @@ class OrderController extends Controller
             'shipping.city' => 'required|string|max:120',
             'shipping.province' => 'required|string|max:120',
             'shipping.postal_code' => 'required|string|max:24',
-            'discount_proof' => 'nullable|file|mimes:jpeg,png|max:5120',
+            'apply_discount' => 'nullable|boolean',
+            'discount_proof' => 'required_if:apply_discount,1|file|mimes:jpeg,png|max:5120',
         ]);
 
         $cart = session()->get('cart', []);
@@ -63,6 +65,7 @@ class OrderController extends Controller
         }
 
         // HANDLE DISCOUNT PROOF UPLOAD
+        $proofPath = null;
         if ($request->hasFile('discount_proof')) {
             $proofPath = $request->file('discount_proof')->store('discount_proofs', 'public');
         }
@@ -144,6 +147,11 @@ class OrderController extends Controller
             session()->forget('cart');
         } else {
             session(['cart' => $remainingCart]);
+        }
+
+        // REMOVE PERSISTED CART ITEMS FOR LOGGED-IN USER THAT WERE CHECKED OUT
+        if (auth()->check() && !empty($checkedOutIds)) {
+            CartItem::where('user_id', auth()->id())->whereIn('product_id', $checkedOutIds)->delete();
         }
 
         session()->forget('checkout_items');
