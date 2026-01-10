@@ -50,6 +50,7 @@
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Total</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Discount</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Actions</th>
             </tr>
         </thead>
@@ -75,6 +76,14 @@
                 <td style="padding:16px 12px; font-weight:600;">₱{{ number_format($order->total, 2) }}</td>
                 <td style="padding:16px 12px; color:#666;">{{ $order->placed_at?->format('M d, h:i A') }}</td>
                 <td style="padding:16px 12px;">
+                    @if($order->discount_proof)
+                        <span style="color:#4A2C2A; font-weight:600;">Applied</span>
+                        <a href="{{ asset('storage/' . $order->discount_proof) }}" target="_blank" style="color:#1890FF; text-decoration:underline;">View Proof</a>
+                    @else
+                        <span style="color:#888;">None</span>
+                    @endif
+                </td>
+                <td style="padding:16px 12px;">
                     <a href="{{ route('staff.orders.show', $order) }}" 
                        style="background:#B07051; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:500;">
                         Process
@@ -82,7 +91,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="7" style="padding:40px; text-align:center; color:#999;">No orders to process.</td></tr>
+            <tr><td colspan="8" style="padding:40px; text-align:center; color:#999;">No orders to process.</td></tr>
             @endforelse
         </tbody>
     </table>

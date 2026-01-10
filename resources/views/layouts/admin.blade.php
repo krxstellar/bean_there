@@ -117,7 +117,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 6px 18px;
+            padding: 6px 14px;
             border-radius: 50px;
             border: 1.5px solid var(--accent-sage);
             background: rgba(174, 169, 160, 0.05);
@@ -125,6 +125,19 @@
 
         .user-name { font-size: 14px; font-weight: 700; }
         .user-role { font-size: 11px; opacity: 0.6; }
+
+        .logout-top-btn {
+            background: none;
+            color: #c0392b;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 14px;
+            border-radius: 50px;
+            border: 1.5px solid;
+        }
+
+        .logout-top-btn:hover { background: rgba(192,57,43,0.06); }
+        .logout-top-btn .logout-text { margin-left: 8px; font-size: 14px; font-weight: 700; vertical-align: middle; }
 
         .content-body { padding: 40px; }
         
@@ -181,14 +194,7 @@
 
         <div class="divider"></div>
 
-        <div class="nav-group" style="margin-top: auto;">
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                @csrf
-                <button type="submit" class="nav-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left; color: #c0392b; font-family: Poppins;">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                </button>
-            </form>
-        </div>
+        
     </div>
 
     <div class="main-wrapper" id="main-wrapper">
@@ -202,12 +208,22 @@
                 </div>
             </div>
 
-            <div class="user-profile">
-                <div style="text-align: right;">
-                    <div class="user-name">{{ Auth::user()->name ?? 'Admin' }}</div>
-                    <div class="user-role">Store Owner</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="user-profile">
+                    <div style="text-align: right;">
+                        <div class="user-name">{{ Auth::user()->name ?? 'Admin' }}</div>
+                        <div class="user-role">Store Owner</div>
+                    </div>
+                    <i class="fa-solid fa-circle-user" style="font-size: 32px; color: var(--accent-sage);"></i>
                 </div>
-                <i class="fa-solid fa-circle-user" style="font-size: 32px; color: var(--accent-sage);"></i>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="logout-top-btn" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="logout-text">Logout</span>
+                    </button>
+                </form>
             </div>
         </div>
 

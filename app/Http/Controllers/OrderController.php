@@ -54,11 +54,17 @@ class OrderController extends Controller
             'shipping.city' => 'required|string|max:120',
             'shipping.province' => 'required|string|max:120',
             'shipping.postal_code' => 'required|string|max:24',
+            'discount_proof' => 'nullable|file|mimes:jpeg,png|max:5120',
         ]);
 
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
+
+        // HANDLE DISCOUNT PROOF UPLOAD
+        if ($request->hasFile('discount_proof')) {
+            $proofPath = $request->file('discount_proof')->store('discount_proofs', 'public');
         }
 
         // GET SELECTED ITEMS FROM SESSION
@@ -101,7 +107,7 @@ class OrderController extends Controller
         // GET INSTRUCTIONS FROM SESSION
         $instructions = session()->get('checkout_instructions', '');
 
-        DB::transaction(function () use ($itemsData, $total, $request, $instructions) {
+        DB::transaction(function () use ($itemsData, $total, $request, $instructions, $proofPath) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'status' => 'pending',
@@ -109,6 +115,8 @@ class OrderController extends Controller
                 'currency' => 'PHP',
                 'instructions' => $instructions,
                 'placed_at' => now(),
+                'discount_proof' => $proofPath ?? null, // Store the discount proof path
+                'discount_status' => isset($proofPath) ? 'pending' : 'none',
             ]);
 
             foreach ($itemsData as $data) {
