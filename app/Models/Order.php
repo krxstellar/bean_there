@@ -19,7 +19,6 @@ class Order extends Model
         'user_id',
         'status',
         'total',
-        'currency',
         'instructions',
         'placed_at',
         'discount_proof',
@@ -48,13 +47,8 @@ class Order extends Model
     public function getTotalAfterDiscountAttribute()
     {
         $itemsTotal = $this->items->sum(fn($i) => $i->unit_price * $i->quantity);
-        if (!$this->discount_amount) {
-            return round($itemsTotal, 2);
-        }
-        if ($this->discount_type === 'percent') {
-            return round($itemsTotal * (1 - ($this->discount_amount / 100)), 2);
-        }
-        return round(max(0, $itemsTotal - $this->discount_amount), 2);
+        $percent = $this->discount_amount ? (float) $this->discount_amount : 20.0;
+        return round($itemsTotal * (1 - ($percent / 100)), 2);
     }
 
     public function approveDiscount($byUser, $note = null)
