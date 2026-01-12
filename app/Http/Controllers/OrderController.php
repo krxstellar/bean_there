@@ -10,6 +10,9 @@ use App\Models\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use App\Models\User;
+use App\Notifications\OrderPlacedNotification;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -110,7 +113,9 @@ class OrderController extends Controller
         // GET INSTRUCTIONS FROM SESSION
         $instructions = session()->get('checkout_instructions', '');
 
-        DB::transaction(function () use ($itemsData, $total, $request, $instructions, $proofPath) {
+        $order = null;
+
+        DB::transaction(function () use ($itemsData, $total, $request, $instructions, $proofPath, &$order) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'status' => 'pending',
@@ -140,6 +145,20 @@ class OrderController extends Controller
                 'postal_code' => $shipping['postal_code'],
             ]);
         });
+
+        // Notify admin(s) about the new order
+        try {
+            $admins = User::role('admin')->get();
+            if ($admins->isNotEmpty()) {
+                foreach ($admins as $admin) {
+                    $admin->notify(new OrderPlacedNotification($order));
+                }
+            } else {
+                Log::warning('Order placed but no admin users found to notify.', ['order_id' => $order?->id]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Failed to send OrderPlacedNotification: ' . $e->getMessage(), ['order_id' => $order?->id]);
+        }
 
         // REMOVE ONLY CHECKED OUT ITEMS FROM CART, KEEP UNCHECKED ITEMS
         $remainingCart = array_diff_key($cart, array_flip($checkedOutIds));

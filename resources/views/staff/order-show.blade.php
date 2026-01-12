@@ -40,6 +40,13 @@
                 </div>
             </div>
 
+            @if($order->instructions)
+                <div style="margin-bottom:16px;">
+                    <div style="color:#888; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Special Instructions</div>
+                    <div style="background:#FFF7F0; border-radius:8px; padding:12px; color:#4A2C2A; font-size:14px;">{{ $order->instructions }}</div>
+                </div>
+            @endif
+
             <h3 style="font-family:'Cooper Black', serif; color:#4A2C2A; margin:0 0 16px;">Order Items</h3>
             <table style="width:100%; border-collapse:collapse;">
                 <thead>

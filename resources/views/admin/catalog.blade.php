@@ -54,8 +54,13 @@
                 <p class="category-tag">{{ $p->category->name ?? 'Uncategorized' }}</p>
                     <div class="price-row">
                     <span>₱{{ number_format($p->price, 2) }}</span>
-                    <div class="action-btns">
-                        <a class="view" href="{{ route('admin.products.show', $p) }}" title="View" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-eye"></i></a>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span style="padding:6px 12px; border-radius:20px; font-size:11px; font-weight:600; {{ $p->is_active ? 'background:#E6FFFB; color:#08979C;' : 'background:#FFF1F0; color:#CF1322;' }}">
+                            {{ $p->is_active ? 'Active' : 'Inactive' }}
+                        </span>
+                        <div class="action-btns">
+                            <a class="view" href="{{ route('admin.products.show', $p) }}" title="View" style="display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-eye"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>

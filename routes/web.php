@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminSubcategoryController;
 use App\Http\Controllers\StaffProductController;
+use App\Http\Controllers\StaffDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminOrdersController;
 use App\Http\Controllers\AdminPaymentsController;
@@ -73,15 +74,14 @@ Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name
 
 // STAFF INTERFACE ROUTES (PROTECTED BY STAFF ROLE)
 Route::middleware(['auth', 'role:staff'])->group(function () {
-    Route::get('/test-staff', function () {
-        return view('staff.dashboard');
-    })->name('staff.dashboard');
+    Route::get('/test-staff', [StaffDashboardController::class, 'index'])->name('staff.dashboard');
 
     Route::get('/staff/orders', [StaffOrdersController::class, 'index'])->name('staff.orders');
     Route::get('/staff/orders/{order}', [StaffOrdersController::class, 'show'])->name('staff.orders.show');
     Route::patch('/staff/orders/{order}/status', [StaffOrdersController::class, 'updateStatus'])->name('staff.orders.updateStatus');
 
     Route::get('/staff/catalog', [StaffProductController::class, 'index'])->name('staff.catalog');
+    Route::post('/staff/products/{product}/notify-low-stock', [StaffProductController::class, 'notifyLowStock'])->name('staff.products.notifyLowStock');
 });
 
 // ADMIN MANAGEMENT ROUTES (PROTECTED BY ADMIN ROLE)
@@ -121,9 +121,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.users');
     })->name('admin.users');
 
-    Route::get('/admin/notifications', function () {
-        return view('admin.notifications');
-    })->name('admin.notifications');
+    Route::get('/admin/notifications', [App\Http\Controllers\AdminNotificationsController::class, 'index'])->name('admin.notifications');
+    Route::patch('/admin/notifications/mark-all-read', [App\Http\Controllers\AdminNotificationsController::class, 'markAllRead'])->name('admin.notifications.markAllRead');
+    Route::patch('/admin/notifications/{id}/mark-read', [App\Http\Controllers\AdminNotificationsController::class, 'markRead'])->name('admin.notifications.markRead');
+    Route::get('/admin/notifications/{id}/view', [App\Http\Controllers\AdminNotificationsController::class, 'viewAndRedirect'])->name('admin.notifications.viewAndRedirect');
 
     Route::get('/admin/settings', function () {
         return view('admin.settings');

@@ -117,7 +117,7 @@
     {{-- Order Items --}}
     @if($order->instructions)
         <div style="background:white; padding:20px; border-radius:12px; border:1px solid #eee; margin-bottom:24px;">
-            <h3 style="margin-top:0; color:#4A2C2A;">Customer Instructions</h3>
+            <h3 style="margin-top:0; color:#4A2C2A;">Special Instructions</h3>
             <p style="white-space:pre-wrap; color:#333; margin:0;">{{ $order->instructions }}</p>
         </div>
     @endif

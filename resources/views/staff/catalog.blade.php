@@ -46,11 +46,24 @@
             </p>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; font-size: 18px; color: #4A2C2A;">₱{{ number_format($p->price, 2) }}</span>
-                <span style="padding:6px 12px; border-radius:20px; font-size:11px; font-weight:600; {{ $p->is_active ? 'background:#E6FFFB; color:#08979C;' : 'background:#FFF1F0; color:#CF1322;' }}">
-                    {{ $p->is_active ? 'Active' : 'Inactive' }}
-                </span>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <span style="padding:6px 12px; border-radius:20px; font-size:11px; font-weight:600; {{ $p->is_active ? 'background:#E6FFFB; color:#08979C;' : 'background:#FFF1F0; color:#CF1322;' }}">
+                        {{ $p->is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
             </div>
         </div>
+
+        <div style="border-top:1px solid #F0F2F5; padding:12px 20px; display:block;">
+            <form method="POST" action="{{ route('staff.products.notifyLowStock', $p) }}" style="margin:0;">
+                @csrf
+                <input type="hidden" name="note" value="Low stock reported by staff">
+                <button type="submit" title="Notify admin about low stock" style="background:#FFD8BF;border:none;padding:10px 14px;border-radius:10px;color:#4A2C2A;font-weight:600;font-size:14px;cursor:pointer;display:block;width:100%;text-align:center;box-sizing:border-box;">
+                    <i class="fa-solid fa-bell"></i> Notify Admin
+                </button>
+            </form>
+        </div>
+
     </div>
     @empty
         <p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No products yet.</p>
