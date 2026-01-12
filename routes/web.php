@@ -10,6 +10,7 @@ use App\Http\Controllers\StaffDashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminOrdersController;
 use App\Http\Controllers\AdminPaymentsController;
+use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\StaffOrdersController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Product;
@@ -113,13 +114,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/payments', [AdminPaymentsController::class, 'index'])->name('admin.payments');
     Route::get('/admin/payments/{payment}/receipt', [AdminPaymentsController::class, 'generateReceipt'])->name('admin.payments.receipt');
 
-    Route::get('/admin/customers', function () {
-        return view('admin.customers');
-    })->name('admin.customers');
+    Route::get('/admin/customers', [App\Http\Controllers\AdminCustomerController::class, 'index'])->name('admin.customers');
 
-    Route::get('/admin/users', function () {
-        return view('admin.users');
-    })->name('admin.users');
+    Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
+    // JSON endpoint used by the admin users page to populate the edit modal
+    Route::get('/admin/users/{user}', [AdminUsersController::class, 'show'])->name('admin.users.show');
+    Route::patch('/admin/users/{user}', [AdminUsersController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/notifications', [App\Http\Controllers\AdminNotificationsController::class, 'index'])->name('admin.notifications');
     Route::patch('/admin/notifications/mark-all-read', [App\Http\Controllers\AdminNotificationsController::class, 'markAllRead'])->name('admin.notifications.markAllRead');

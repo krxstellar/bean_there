@@ -13,27 +13,28 @@ return new class extends Migration
         // CREATE ROLES IF NOT EXISTS
         Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => 'staff', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'Store Manager', 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
 
-        // CREATE ADMIN USER WITH ENCRYPTED PASSWORD
+        // CREATE ADMIN USER 
         $admin = User::firstOrCreate(
             ['email' => 'joan@beanthere.com'],
             [
                 'name' => 'Admin Joan',
-                'password' => Hash::make('admin123'), // SECURED & ENCRYPTED
+                'password' => Hash::make('admin123'),
             ]
         );
         $admin->assignRole('admin');
 
-        // CREATE STAFF USER WITH ENCRYPTED PASSWORD
+        // CREATE STAFF USER 
         $staff = User::firstOrCreate(
             ['email' => 'bianca@beanthere.com'],
             [
                 'name' => 'Staff Bianca',
-                'password' => Hash::make('staff123'), // SECURED & ENCRYPTED
+                'password' => Hash::make('staff123'),
             ]
         );
-        $staff->assignRole('staff');
+        $staff->assignRole('Store Manager');
 
         // CREATE DEFAULT CATEGORIES
         Category::firstOrCreate(
