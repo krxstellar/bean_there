@@ -73,7 +73,18 @@
                 </td>
                 <td style="padding:16px 12px;">{{ $order->user->name ?? 'Guest' }}</td>
                 <td style="padding:16px 12px;">{{ $order->items->count() }} item(s)</td>
-                <td style="padding:16px 12px; font-weight:600;">₱{{ number_format($order->total, 2) }}</td>
+                @php
+                    $displayTotal = ($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total;
+                    $originalTotal = $order->total;
+                @endphp
+                <td style="padding:16px 12px; font-weight:600;">
+                    @if(number_format($displayTotal, 2) !== number_format($originalTotal, 2))
+                        <span style="color:#888; text-decoration:line-through; margin-right:6px;">₱{{ number_format($originalTotal, 2) }}</span>
+                        <span style="color:#4A2C2A; font-weight:700;">₱{{ number_format($displayTotal, 2) }}</span>
+                    @else
+                        ₱{{ number_format($displayTotal, 2) }}
+                    @endif
+                </td>
                 <td style="padding:16px 12px; color:#666;">{{ $order->placed_at?->format('M d, h:i A') }}</td>
                 <td style="padding:16px 12px;">
                     @if($order->discount_proof)

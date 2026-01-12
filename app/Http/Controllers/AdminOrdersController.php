@@ -54,7 +54,6 @@ class AdminOrdersController extends Controller
                 $payment = Payment::create([
                     'order_id' => $order->id,
                     'amount' => $amount,
-                    'method' => 'cod',
                     'status' => 'paid',
                     'paid_at' => now(),
                 ]);

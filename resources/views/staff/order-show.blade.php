@@ -1,4 +1,4 @@
-s@extends('layouts.staff')
+@extends('layouts.staff')
 
 @section('staff-content')
 <div style="margin-bottom:24px;">
@@ -70,9 +70,20 @@ s@extends('layouts.staff')
                     @endforelse
                 </tbody>
                 <tfoot>
+                    @php
+                        $displayTotal = $order->latestPayment->amount ?? (($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total);
+                        $originalTotal = $order->total;
+                    @endphp
                     <tr style="border-top:2px solid #eee;">
                         <td colspan="3" style="padding:14px 8px; text-align:right; font-weight:700; color:#4A2C2A;">Total</td>
-                        <td style="padding:14px 8px; text-align:right; font-weight:700; font-size:18px; color:#B07051;">₱{{ number_format($order->total, 2) }}</td>
+                        <td style="padding:14px 8px; text-align:right; font-weight:700; font-size:18px; color:#B07051;">
+                            @if(number_format($displayTotal, 2) !== number_format($originalTotal, 2))
+                                <span style="color:#888; text-decoration:line-through; margin-right:8px;">₱{{ number_format($originalTotal, 2) }}</span>
+                                <span style="color:#4A2C2A; font-weight:700;">₱{{ number_format($displayTotal, 2) }}</span>
+                            @else
+                                ₱{{ number_format($displayTotal, 2) }}
+                            @endif
+                        </td>
                     </tr>
                 </tfoot>
             </table>

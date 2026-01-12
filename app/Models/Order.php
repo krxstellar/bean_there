@@ -59,6 +59,11 @@ class Order extends Model
             $this->load('items');
         }
 
+        // Ensure there is a discount percentage recorded. Default to 20% if none provided.
+        if (empty($this->discount_amount)) {
+            $this->discount_amount = 20.0;
+        }
+
         $this->discount_status = 'approved';
         $this->discount_approved_by = $byUser->id ?? null;
         $this->discount_approved_at = now();
