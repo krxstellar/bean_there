@@ -30,8 +30,16 @@
                         </div>
                     </td>
                     <td style="padding: 20px;">
-                        @php $position = $user->staff->position ?? 'Staff'; @endphp
-                        <span style="background: #FFF4E5; color: #D48806; padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;">{{ $position }}</span>
+                        @php
+                            $position = $user->staffs->position ?? 'Baker';
+                            $badgeStyles = [
+                                'Baker' => ['bg' => '#FFE6F0', 'color' => '#C2185B'],
+                                'Barista' => ['bg' => '#E6F0FF', 'color' => '#0B66D0'],
+                                'Store Manager' => ['bg' => '#FFF7CC', 'color' => '#D48806'],
+                            ];
+                            $style = $badgeStyles[$position] ?? $badgeStyles['Baker'];
+                        @endphp
+                        <span style="background: {{ $style['bg'] }}; color: {{ $style['color'] }}; padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;">{{ $position }}</span>
                     </td>
                     <td style="padding: 20px;">{{ $user->email }}</td>
                     <td style="padding: 20px;">{{ $user->created_at->format('M d, Y') }}</td>
