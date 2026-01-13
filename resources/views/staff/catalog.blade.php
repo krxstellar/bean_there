@@ -8,6 +8,18 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div style="margin-bottom:16px;background:#F6FFED;border-left:4px solid #52C41A;padding:12px 16px;border-radius:8px;color:#237804;font-weight:600;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div style="margin-bottom:16px;background:#FFF1F0;border-left:4px solid #F5222D;padding:12px 16px;border-radius:8px;color:#CF1322;font-weight:600;">
+        {{ session('error') }}
+    </div>
+@endif
+
 {{-- Quick Stats --}}
 <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
     @php

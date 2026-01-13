@@ -12,6 +12,22 @@ class LowStockNotification extends Notification
 {
     use Queueable;
 
+    /**
+     * Return a unique key for this notification (used by MailChannel).
+     *
+     * @return string
+     */
+    public function getKey(): string
+    {
+        if (! empty($this->id)) {
+            return (string) $this->id;
+        }
+
+        $this->id = (string) \Illuminate\Support\Str::uuid();
+
+        return $this->id;
+    }
+
     public function __construct(protected Product $product, protected ?User $reporter = null, protected ?string $note = null)
     {
     }

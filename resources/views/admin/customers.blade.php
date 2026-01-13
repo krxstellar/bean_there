@@ -12,7 +12,6 @@
                     <th style="padding: 20px;">Total Orders</th>
                     <th style="padding: 20px;">Total Spent</th>
                     <th style="padding: 20px;">Status</th>
-                    <th style="padding: 20px; text-align: center;">Action</th>
                 </tr>
             </thead>
             <tbody style="font-size: 14px; color: #4A2C2A;">
@@ -20,8 +19,11 @@
                     @php
                         $parts = preg_split('/\s+/', trim($customer->name));
                         $initials = strtoupper(substr($parts[0] ?? '', 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
-                        $ordersCount = $customer->orders_count ?? 0;
-                        $totalSpent = $customer->orders_sum_total ?? 0;
+                        $completedOrders = $customer->orders()->where('status', 'completed')->get();
+                        $ordersCount = $completedOrders->count();
+                        $totalSpent = $completedOrders->sum(function($o) {
+                            return (($o->discount_status ?? '') === 'approved') ? (float) $o->total_after_discount : (float) $o->total;
+                        });
                         $statusLabel = $ordersCount > 0 ? 'Active' : 'New';
                         $statusStyle = $ordersCount > 0 ? 'background: #E6FFFB; color: #08979C;' : 'background: #F0F2F5; color: #666;';
                     @endphp
@@ -36,13 +38,11 @@
                         <td style="padding: 20px;">
                             <span style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; {{ $statusStyle }}">{{ $statusLabel }}</span>
                         </td>
-                        <td style="padding: 20px; text-align: center;">
-                            <a href="#" style="color: #AEA9A0; text-decoration: none;"><i class="fa-solid fa-ellipsis-vertical"></i></a>
-                        </td>
+                        
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="padding: 20px; text-align: center; color: #666;">No customers found.</td>
+                        <td colspan="5" style="padding: 20px; text-align: center; color: #666;">No customers found.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->unsignedInteger('customer_order_number')->nullable();
             $table->unique(['user_id', 'customer_order_number']);
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('fulfillment_type')->default('delivery');
             $table->string('status')->default('pending');
             $table->decimal('total', 10, 2);
             $table->string('discount_status')->default('none');

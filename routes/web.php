@@ -20,6 +20,16 @@ use App\Models\Payment;
 
 // CUSTOMER ROUTES
 Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->hasRole('admin')) {
+            return redirect('/test-admin');
+        }
+        if ($user->hasRole('staff')) {
+            return redirect('/test-staff');
+        }
+    }
+
     return view('customer.welcome');
 })->name('welcome');
 
@@ -92,9 +102,9 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     // STAFF SETTINGS (mirror admin settings behavior)
     Route::get('/staff/settings', function () {
         $settings = cache('admin.settings', [
-            'email' => 'staff@example.com',
-            'contact_number' => '+63 912 345 6789',
-            'store_address' => '123 Pastry Lane, Quezon City, Metro Manila',
+            'email' => 'support@beanthere.com',
+            'contact_number' => '0987 654 3210',
+            'store_address' => 'Quezon City, Metro Manila',
             'hours_weekdays' => '8:00 AM - 7:00 PM',
             'hours_weekend' => '9:00 AM - 5:00 PM',
         ]);
@@ -162,9 +172,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/settings', function () {
         $settings = cache('admin.settings', [
-            'email' => 'admin@example.com',
-            'contact_number' => '+63 912 345 6789',
-            'store_address' => '123 Pastry Lane, Quezon City, Metro Manila',
+            'email' => 'support@beanthere.com',
+            'contact_number' => '0987 654 3210',
+            'store_address' => 'Quezon City, Metro Manila',
             'hours_weekdays' => '8:00 AM - 7:00 PM',
             'hours_weekend' => '9:00 AM - 5:00 PM',
         ]);
@@ -185,6 +195,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
         return redirect()->route('admin.settings')->with('status', 'Settings updated.');
     })->name('admin.settings.update');
+
+    Route::post('/admin/settings/change-password', function (Request $request) {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->input('current_password'), $user->password)) {
+            return redirect()->route('admin.settings')
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
+        }
+
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->input('password'));
+        $user->save();
+
+        return redirect()->route('admin.settings')->with('status', 'Password changed.');
+    })->name('admin.settings.change_password');
 
     // ADMIN PRODUCTS CRUD (INDEX HANDLED BY ADMIN.CATALOG ROUTE ABOVE)
     Route::prefix('admin')->group(function () {

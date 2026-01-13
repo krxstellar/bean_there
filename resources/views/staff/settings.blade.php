@@ -51,13 +51,6 @@
                     </div>
                 </div>
             </div>
-
-            <div style="background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                <h3 style="margin-top: 0; color: #4A2C2A; border-bottom: 1.5px solid #F0F2F5; padding-bottom: 10px;">Login & Security</h3>
-                <p style="font-size: 13px; color: #AEA9A0; margin-bottom: 20px;">Update your staff password periodically to stay secure.</p>
-                <button style="background: #FDF9F0; color: #4A2C2A; border: 1.5px solid #4A2C2A; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;">Change Password</button>
-            </div>
-
         </div>
         </div>
     </form>

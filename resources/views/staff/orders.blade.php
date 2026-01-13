@@ -48,6 +48,7 @@
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Status</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Customer</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Fulfillment</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Total</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Discount</th>
@@ -73,6 +74,7 @@
                 </td>
                 <td style="padding:16px 12px;">{{ $order->user->name ?? 'Guest' }}</td>
                 <td style="padding:16px 12px;">{{ $order->items->count() }} item(s)</td>
+                <td style="padding:16px 12px;">{{ ucfirst($order->fulfillment_type ?? 'delivery') }}</td>
                 @php
                     $displayTotal = ($order->discount_status ?? '') === 'approved' ? $order->total_after_discount : $order->total;
                     $originalTotal = $order->total;

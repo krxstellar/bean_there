@@ -639,10 +639,10 @@
             <div class="footer-column contact">
                 <h3>CONTACT US</h3>
                 <p>Call us today at</p>
-                <p><strong>{{ $settings['contact_number'] ?? '+0123456789' }}</strong></p>
+                <p><strong>{{ $settings['contact_number'] ?? '0987 654 3210' }}</strong></p>
                 <div style="height: 15px;"></div>
                 <p>or send a message to</p>
-                <p><strong>{{ $settings['email'] ?? 'support@local.com' }}</strong></p>
+                <p><strong>{{ $settings['email'] ?? 'support@beanthere.com' }}</strong></p>
             </div>
             <div class="footer-divider"></div>
             <div class="footer-column links">

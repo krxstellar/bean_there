@@ -15,6 +15,10 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        if (Auth::check()) {
+            return redirect($this->redirectForRole(Auth::user()));
+        }
+
         return view('customer.login');
     }
 

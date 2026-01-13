@@ -63,6 +63,7 @@
             </p>
             <p><strong>Customer:</strong> {{ $order->user->name ?? 'Guest' }} ({{ $order->user->email ?? '-' }})</p>
             <p><strong>Placed:</strong> {{ $order->placed_at?->format('M d, Y h:i A') }}</p>
+            <p><strong>Fulfillment:</strong> {{ ucfirst($order->fulfillment_type ?? 'delivery') }}</p>
             @if($order->discount_proof)
                 @php $dstatus = $order->discount_status ?? 'none'; @endphp
                 @if($dstatus === 'pending')

@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Notifications\LowStockNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 
 class StaffProductController extends Controller
@@ -27,7 +28,7 @@ class StaffProductController extends Controller
         $note = $request->input('note');
         $reporter = $request->user();
 
-        $admin->notify(new LowStockNotification($product, $reporter, $note));
+        Notification::send($admin, new LowStockNotification($product, $reporter, $note));
 
         return redirect()->back()->with('success', 'Admin notified about low stock for ' . $product->name . '.');
     }

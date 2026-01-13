@@ -237,7 +237,15 @@
                                     {{ ucfirst($order->status) }}
                                 </span>
                             </td>
-                            <td>₱{{ number_format($order->total, 2) }}</td>
+                            @if(isset($order->discount_status) && $order->discount_status === 'approved')
+                                @php $percent = $order->discount_amount ?? 20; @endphp
+                                <td>
+                                    ₱{{ number_format($order->total_after_discount, 2) }}<br>
+                                    <small style="color:#7a5c5a;"><s>₱{{ number_format($order->total, 2) }}</s> ({{ $percent }}% off)</small>
+                                </td>
+                            @else
+                                <td>₱{{ number_format($order->total, 2) }}</td>
+                            @endif
                             <td>
                                 <a href="{{ route('orders.show', $order) }}" class="details-btn">View Details</a>
                             </td>

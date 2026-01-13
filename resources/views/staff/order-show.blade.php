@@ -29,6 +29,23 @@
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
                 <div>
+                    <div style="color:#888; font-size:12px; text-transform:uppercase; margin-bottom:4px;">Fulfillment</div>
+                    <div style="font-weight:600;">{{ ucfirst($order->fulfillment_type ?? 'delivery') }}</div>
+                </div>
+                <div>
+                    <div style="color:#888; font-size:12px; text-transform:uppercase; margin-bottom:4px;">Shipping</div>
+                    @if($shipping)
+                        <div style="font-weight:600;">{{ $shipping->full_name }}</div>
+                        <div style="color:#666; font-size:13px;">{{ $shipping->line1 }} {{ $shipping->line2 }}</div>
+                        <div style="color:#666; font-size:13px;">{{ $shipping->city }}, {{ $shipping->province }} {{ $shipping->postal_code }}</div>
+                    @else
+                        <div style="color:#999;">No shipping address on file.</div>
+                    @endif
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+                <div>
                     <div style="color:#888; font-size:12px; text-transform:uppercase; margin-bottom:4px;">Customer</div>
                     <div style="font-weight:600;">{{ $order->user->name ?? 'Guest' }}</div>
                     <div style="color:#666; font-size:13px;">{{ $order->user->email ?? '-' }}</div>

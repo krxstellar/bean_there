@@ -20,6 +20,7 @@
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Total</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Customer</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Items</th>
+                <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Fulfillment</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Placed</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Discount</th>
                 <th style="padding:16px 12px; color:#888; font-size:12px; text-transform:uppercase;">Actions</th>
@@ -56,6 +57,7 @@
                 </td>
                 <td style="padding:16px 12px;">{{ $o->user->name ?? 'Guest' }}</td>
                 <td style="padding:16px 12px;">{{ $o->items->count() }} item(s)</td>
+                <td style="padding:16px 12px;">{{ ucfirst($o->fulfillment_type ?? 'delivery') }}</td>
                 <td style="padding:16px 12px; color:#666;">{{ $o->placed_at?->format('M d, Y') }}</td>
                 <td style="padding:16px 12px;">
                     @if($o->discount_proof)

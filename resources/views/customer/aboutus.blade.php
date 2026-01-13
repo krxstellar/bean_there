@@ -112,7 +112,7 @@
 
             @php
                 $settings = cache('admin.settings', [
-                    'store_address' => '123 Pastry Lane, Quezon City, Metro Manila',
+                    'store_address' => 'Quezon City, Metro Manila',
                     'hours_weekdays' => '8:00 AM - 7:00 PM',
                     'hours_weekend' => '9:00 AM - 5:00 PM',
                 ]);
