@@ -220,7 +220,7 @@
             <table class="orders-table">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
+                        <th>Order</th>
                         <th>Date</th>
                         <th>Status</th>
                         <th>Total</th>

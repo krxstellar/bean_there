@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AdminProductController;
@@ -87,6 +88,33 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
     Route::get('/staff/catalog', [StaffProductController::class, 'index'])->name('staff.catalog');
     Route::post('/staff/products/{product}/notify-low-stock', [StaffProductController::class, 'notifyLowStock'])->name('staff.products.notifyLowStock');
+
+    // STAFF SETTINGS (mirror admin settings behavior)
+    Route::get('/staff/settings', function () {
+        $settings = cache('admin.settings', [
+            'email' => 'staff@example.com',
+            'contact_number' => '+63 912 345 6789',
+            'store_address' => '123 Pastry Lane, Quezon City, Metro Manila',
+            'hours_weekdays' => '8:00 AM - 7:00 PM',
+            'hours_weekend' => '9:00 AM - 5:00 PM',
+        ]);
+
+        return view('staff.settings', compact('settings'));
+    })->name('staff.settings');
+
+    Route::post('/staff/settings', function (\Illuminate\Http\Request $request) {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'contact_number' => 'nullable|string|max:50',
+            'store_address' => 'nullable|string|max:500',
+            'hours_weekdays' => 'nullable|string|max:100',
+            'hours_weekend' => 'nullable|string|max:100',
+        ]);
+
+        cache(['admin.settings' => $data], now()->addYears(5));
+
+        return redirect()->route('staff.settings')->with('status', 'Settings updated.');
+    })->name('staff.settings.update');
 });
 
 // ADMIN MANAGEMENT ROUTES (PROTECTED BY ADMIN ROLE)
@@ -133,8 +161,30 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/notifications/{id}/view', [App\Http\Controllers\AdminNotificationsController::class, 'viewAndRedirect'])->name('admin.notifications.viewAndRedirect');
 
     Route::get('/admin/settings', function () {
-        return view('admin.settings');
+        $settings = cache('admin.settings', [
+            'email' => 'admin@example.com',
+            'contact_number' => '+63 912 345 6789',
+            'store_address' => '123 Pastry Lane, Quezon City, Metro Manila',
+            'hours_weekdays' => '8:00 AM - 7:00 PM',
+            'hours_weekend' => '9:00 AM - 5:00 PM',
+        ]);
+
+        return view('admin.settings', compact('settings'));
     })->name('admin.settings');
+
+    Route::post('/admin/settings', function (Request $request) {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'contact_number' => 'nullable|string|max:50',
+            'store_address' => 'nullable|string|max:500',
+            'hours_weekdays' => 'nullable|string|max:100',
+            'hours_weekend' => 'nullable|string|max:100',
+        ]);
+
+        cache(['admin.settings' => $data], now()->addYears(5));
+
+        return redirect()->route('admin.settings')->with('status', 'Settings updated.');
+    })->name('admin.settings.update');
 
     // ADMIN PRODUCTS CRUD (INDEX HANDLED BY ADMIN.CATALOG ROUTE ABOVE)
     Route::prefix('admin')->group(function () {
