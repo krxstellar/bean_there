@@ -167,6 +167,22 @@
                     </form>
                     @endif
                 </div>
+                @if($order->discount_proof && ($order->discount_status ?? '') === 'pending')
+                    <div style="margin-top:12px; display:flex; gap:8px;">
+                        <form action="{{ route('staff.orders.discount.approve', $order) }}" method="POST" style="margin:0; flex:1;">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="note" value="Approved by staff">
+                            <button type="submit" style="width:100%; background:#08979C; color:white; border:none; padding:10px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Approve Discount</button>
+                        </form>
+                        <form action="{{ route('staff.orders.discount.reject', $order) }}" method="POST" style="margin:0; flex:1;">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="note" value="Rejected by staff">
+                            <button type="submit" style="width:100%; background:#CF1322; color:white; border:none; padding:10px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">Reject Discount</button>
+                        </form>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

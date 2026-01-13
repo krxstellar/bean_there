@@ -81,6 +81,10 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/staff/orders/{order}', [StaffOrdersController::class, 'show'])->name('staff.orders.show');
     Route::patch('/staff/orders/{order}/status', [StaffOrdersController::class, 'updateStatus'])->name('staff.orders.updateStatus');
 
+    // Allow staff to approve/reject discount requests
+    Route::patch('/staff/orders/{order}/discount/approve', [StaffOrdersController::class, 'approveDiscount'])->name('staff.orders.discount.approve');
+    Route::patch('/staff/orders/{order}/discount/reject', [StaffOrdersController::class, 'rejectDiscount'])->name('staff.orders.discount.reject');
+
     Route::get('/staff/catalog', [StaffProductController::class, 'index'])->name('staff.catalog');
     Route::post('/staff/products/{product}/notify-low-stock', [StaffProductController::class, 'notifyLowStock'])->name('staff.products.notifyLowStock');
 });

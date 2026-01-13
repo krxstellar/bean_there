@@ -18,7 +18,17 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = auth()->user()->orders()->orderBy('placed_at', 'desc')->get();
+        // Fetch user's orders in chronological order so we can assign
+        // a per-customer ordinal starting at 1 (first order = 1).
+        $orders = auth()->user()->orders()->orderBy('placed_at', 'asc')->get()->values();
+
+        $orders->each(function ($order, $index) {
+            $order->customer_order_number = $index + 1;
+        });
+
+        // For display keep newest first (descending)
+        $orders = $orders->sortByDesc('placed_at')->values();
+
         return view('customer.orders', compact('orders'));
     }
 

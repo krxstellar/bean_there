@@ -230,7 +230,7 @@
                 <tbody>
                     @foreach($orders as $order)
                         <tr>
-                            <td class="order-id">#{{ $order->id }}</td>
+                            <td class="order-id">#{{ $order->customer_order_number ?? $order->order_number ?? $order->id }}</td>
                             <td>{{ $order->placed_at->format('M d, Y') }}</td>
                             <td>
                                 <span class="status-badge status-{{ $order->status }}">

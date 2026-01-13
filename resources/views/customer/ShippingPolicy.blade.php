@@ -98,7 +98,7 @@
 
         <div class="shipping-item">
             <h3>Pick-up Details</h3>
-            <p>For those who prefer to pick up their orders, you can visit our designated location during operating hours. Please wait for your "Ready for Pick-up" notification before heading over.</p>
+            <p>For those who prefer to pick up their orders, you can visit our designated location during operating hours. Please wait for your "Processing" notification before heading over.</p>
         </div>
 
         <div class="shipping-item">

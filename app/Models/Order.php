@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -16,6 +17,8 @@ class Order extends Model
     public const DISCOUNT_STATUSES = ['none', 'pending', 'approved', 'rejected'];
 
     protected $fillable = [
+        'order_number',
+        'customer_order_number',
         'user_id',
         'status',
         'total',
@@ -111,5 +114,25 @@ class Order extends Model
     public function shippingAddress(): HasOne
     {
         return $this->hasOne(Address::class)->where('type', 'shipping');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($order) {
+            DB::transaction(function () use ($order) {
+                if (empty($order->order_number)) {
+                    $max = DB::table('orders')->lockForUpdate()->max('order_number');
+                    $order->order_number = ($max ?? 0) + 1;
+                }
+
+                if (empty($order->customer_order_number)) {
+                    $maxCustomer = DB::table('orders')
+                        ->where('user_id', $order->user_id)
+                        ->lockForUpdate()
+                        ->max('customer_order_number');
+                    $order->customer_order_number = ($maxCustomer ?? 0) + 1;
+                }
+            });
+        });
     }
 }

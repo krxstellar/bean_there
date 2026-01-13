@@ -9,6 +9,9 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('order_number')->unique();
+            $table->unsignedInteger('customer_order_number')->nullable();
+            $table->unique(['user_id', 'customer_order_number']);
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('status')->default('pending');
             $table->decimal('total', 10, 2);

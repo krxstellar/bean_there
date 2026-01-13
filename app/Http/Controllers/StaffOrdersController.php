@@ -44,4 +44,34 @@ class StaffOrdersController extends Controller
 
         return back()->with('success', 'Order status updated to ' . ucfirst($validated['status']));
     }
+
+    public function approveDiscount(Request $request, Order $order)
+    {
+        $request->validate([
+            'note' => 'nullable|string|max:1000',
+        ]);
+
+        $ok = $order->approveDiscount(auth()->user(), $request->input('note'));
+
+        if (!$ok) {
+            return back()->with('success', 'Unable to approve discount.');
+        }
+
+        return back()->with('success', 'Discount approved.');
+    }
+
+    public function rejectDiscount(Request $request, Order $order)
+    {
+        $request->validate([
+            'note' => 'nullable|string|max:1000',
+        ]);
+
+        $ok = $order->rejectDiscount(auth()->user(), $request->input('note'));
+
+        if (!$ok) {
+            return back()->with('success', 'Unable to reject discount.');
+        }
+
+        return back()->with('success', 'Discount rejected.');
+    }
 }

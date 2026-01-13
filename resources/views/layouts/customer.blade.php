@@ -430,7 +430,7 @@
                     </div>
                     <div class="policy-item">
                         <strong>Pick-up Details</strong>
-                        <p>For pick-up orders, please wait for your "Ready for Pick-up" notification before heading to our location.</p>
+                        <p>For pick-up orders, please wait for your "Processing" notification before heading to our location.</p>
                     </div>
                     <div class="policy-item">
                         <strong>Standard Lead Time</strong>
