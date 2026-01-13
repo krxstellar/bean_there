@@ -221,7 +221,7 @@
 </style>
 
 <div class="order-detail-section">
-    <h1 class="order-detail-title">Order #{{ $order->id }}</h1>
+    <h1 class="order-detail-title">Order #{{ $order->customer_order_number ?? $order->order_number ?? $order->id }}</h1>
 
     <div class="order-detail-grid">
         <div class="order-main">
@@ -305,10 +305,24 @@
                     <span>Subtotal</span>
                     <span>₱{{ number_format($order->total, 2) }}</span>
                 </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span>₱{{ number_format($order->total, 2) }}</span>
-                </div>
+
+                @if(isset($order->discount_status) && $order->discount_status === 'approved')
+                    @php $percent = $order->discount_amount ?? 20; @endphp
+                    <div class="summary-row">
+                        <span>Discount ({{ $percent }}%)</span>
+                        <span>-₱{{ number_format(($order->total - $order->total_after_discount), 2) }}</span>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>₱{{ number_format($order->total_after_discount, 2) }}</span>
+                    </div>
+                @else
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>₱{{ number_format($order->total, 2) }}</span>
+                    </div>
+                @endif
 
                 <div class="tracking-box">
                     <strong>Tracking Status</strong>

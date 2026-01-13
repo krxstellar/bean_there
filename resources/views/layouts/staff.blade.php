@@ -162,7 +162,7 @@
         <div class="divider"></div>
 
         <div class="nav-group">
-            <a href="#" class="nav-item">
+            <a href="{{ route('staff.settings') }}" class="nav-item {{ request()->routeIs('staff.settings*') ? 'active' : '' }}">
                 <i class="fa-solid fa-gear"></i> Settings
             </a>
             <form action="{{ route('logout') }}" method="POST" style="margin: 0;">

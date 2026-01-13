@@ -12,21 +12,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Notifications\OrderPlacedNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        // Fetch user's orders in chronological order so we can assign
-        // a per-customer ordinal starting at 1 (first order = 1).
         $orders = auth()->user()->orders()->orderBy('placed_at', 'asc')->get()->values();
 
         $orders->each(function ($order, $index) {
             $order->customer_order_number = $index + 1;
         });
 
-        // For display keep newest first (descending)
         $orders = $orders->sortByDesc('placed_at')->values();
 
         return view('customer.orders', compact('orders'));
@@ -61,6 +59,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'fulfillment_type' => 'required|in:delivery,pickup,dine-in',
             'shipping.full_name' => 'required|string|max:255',
             'shipping.phone' => 'required|string|max:32',
             'shipping.line1' => 'required|string|max:255',
@@ -131,6 +130,7 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'total' => $total,
                 'currency' => 'PHP',
+                'fulfillment_type' => $request->input('fulfillment_type', 'delivery'),
                 'instructions' => $instructions,
                 'placed_at' => now(),
                 'discount_proof' => $proofPath ?? null, // Store the discount proof path
@@ -160,9 +160,7 @@ class OrderController extends Controller
         try {
             $admins = User::role('admin')->get();
             if ($admins->isNotEmpty()) {
-                foreach ($admins as $admin) {
-                    $admin->notify(new OrderPlacedNotification($order));
-                }
+                Notification::send($admins, new OrderPlacedNotification($order));
             } else {
                 Log::warning('Order placed but no admin users found to notify.', ['order_id' => $order?->id]);
             }

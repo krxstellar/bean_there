@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Order extends Model
 {
@@ -22,20 +23,17 @@ class Order extends Model
         'user_id',
         'status',
         'total',
+        'fulfillment_type',
         'instructions',
         'placed_at',
         'discount_proof',
-        'discount_amount',
-        'discount_type',
         'discount_status',
         'discount_approved_by',
         'discount_approved_at',
-        'discount_approval_note',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
         'placed_at' => 'datetime',
         'discount_approved_at' => 'datetime',
     ];
@@ -48,7 +46,12 @@ class Order extends Model
     public function getTotalAfterDiscountAttribute()
     {
         $itemsTotal = $this->items->sum(fn($i) => $i->unit_price * $i->quantity);
-        $percent = $this->discount_amount ? (float) $this->discount_amount : 20.0;
+        if (Schema::hasColumn('orders', 'discount_amount')) {
+            $percent = $this->discount_amount ? (float) $this->discount_amount : 20.0;
+        } else {
+            $percent = 20.0;
+        }
+
         return round($itemsTotal * (1 - ($percent / 100)), 2);
     }
 
@@ -62,16 +65,34 @@ class Order extends Model
             $this->load('items');
         }
 
-        // Ensure there is a discount percentage recorded. Default to 20% if none provided.
-        if (empty($this->discount_amount)) {
-            $this->discount_amount = 20.0;
+        $updates = [];
+
+        if (Schema::hasColumn('orders', 'discount_amount')) {
+            if (empty($this->discount_amount)) {
+                $updates['discount_amount'] = 20.0;
+            }
         }
 
-        $this->discount_status = 'approved';
-        $this->discount_approved_by = $byUser->id ?? null;
-        $this->discount_approved_at = now();
-        $this->discount_approval_note = $note;
-        $this->save();
+        if (Schema::hasColumn('orders', 'discount_status')) {
+            $updates['discount_status'] = 'approved';
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approved_by')) {
+            $updates['discount_approved_by'] = $byUser->id ?? null;
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approved_at')) {
+            $updates['discount_approved_at'] = now();
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approval_note') && $note !== null) {
+            $updates['discount_approval_note'] = $note;
+        }
+
+        if (!empty($updates)) {
+            DB::table('orders')->where('id', $this->id)->update($updates);
+            $this->refresh();
+        }
 
         return true;
     }
@@ -82,11 +103,28 @@ class Order extends Model
             return false;
         }
 
-        $this->discount_status = 'rejected';
-        $this->discount_approved_by = $byUser->id ?? null;
-        $this->discount_approved_at = now();
-        $this->discount_approval_note = $note;
-        $this->save();
+        $updates = [];
+
+        if (Schema::hasColumn('orders', 'discount_status')) {
+            $updates['discount_status'] = 'rejected';
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approved_by')) {
+            $updates['discount_approved_by'] = $byUser->id ?? null;
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approved_at')) {
+            $updates['discount_approved_at'] = now();
+        }
+
+        if (Schema::hasColumn('orders', 'discount_approval_note') && $note !== null) {
+            $updates['discount_approval_note'] = $note;
+        }
+
+        if (!empty($updates)) {
+            DB::table('orders')->where('id', $this->id)->update($updates);
+            $this->refresh();
+        }
 
         return true;
     }

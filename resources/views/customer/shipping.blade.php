@@ -57,7 +57,7 @@
 </style>
 
 <div class="checkout-section">
-    <h1 class="page-title">Checkout</h1>
+    <h1 class="page-title">Order Checkout Form</h1>
     <div class="checkout-container">
         <h2 style="color:#4A2C2A; margin-top:0;">Shipping Address</h2>
         @if($errors->any())
@@ -69,41 +69,56 @@
         @endif
         <form method="POST" action="{{ route("checkout.store") }}" enctype="multipart/form-data">
             @csrf
+
+            <div id="shipping-fields">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="shipping[full_name]" value="{{ old("shipping.full_name", auth()->user()->name ?? "") }}" required>
+                </div>
             <div class="form-group">
-                <label>Full Name *</label>
-                <input type="text" name="shipping[full_name]" value="{{ old("shipping.full_name", auth()->user()->name ?? "") }}" required>
+                <label>Phone Number</label>
+                <input type="text" name="shipping[phone]" placeholder="09XX-XXX-XXXX" value="{{ old("shipping.phone") }}" required>
             </div>
             <div class="form-group">
-                <label>Phone Number *</label>
-                <input type="text" name="shipping[phone]" placeholder="09xx-xxx-xxxx" value="{{ old("shipping.phone") }}" required>
+                <label>Address Line 1</label>
+                <input type="text" name="shipping[line1]" placeholder="House number/Block/Lot/Street address" value="{{ old("shipping.line1") }}" required>
             </div>
             <div class="form-group">
-                <label>Address Line 1 *</label>
-                <input type="text" name="shipping[line1]" placeholder="Street address" value="{{ old("shipping.line1") }}" required>
-            </div>
-            <div class="form-group">
-                <label>Address Line 2 (optional)</label>
-                <input type="text" name="shipping[line2]" placeholder="Apt, suite, etc" value="{{ old("shipping.line2") }}">
+                <label>Address Line 2</label>
+                <input type="text" name="shipping[line2]" placeholder="Apartment number/Suite/Barangay/District/etc." value="{{ old("shipping.line2") }}">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>City *</label>
+                    <label>City</label>
                     <input type="text" name="shipping[city]" placeholder="Quezon City" value="{{ old("shipping.city") }}" required>
                 </div>
                 <div class="form-group">
-                    <label>Province *</label>
+                    <label>Province</label>
                     <input type="text" name="shipping[province]" placeholder="NCR" value="{{ old("shipping.province") }}" required>
                 </div>
             </div>
             <div class="form-group">
-                <label>Postal Code *</label>
+                <label>Postal Code</label>
                 <input type="text" name="shipping[postal_code]" placeholder="1100" value="{{ old("shipping.postal_code") }}" required>
             </div>
+            </div>
+            <div style="height:1px;background:#eee;margin:16px 0;"></div>
+            
+            <h2 style="color:#4A2C2A; margin:8px 0 4px;">How Would You Like to Get Your Order?</h2>
+                <div style="background:white; border:1px solid #eee; border-radius:12px; padding:12px 16px; margin-top:4px; margin-bottom:12px;">
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="fulfillment_type" value="delivery" {{ old('fulfillment_type','delivery') === 'delivery' ? 'checked' : '' }}> Delivery</label>
+                        <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="fulfillment_type" value="pickup" {{ old('fulfillment_type') === 'pickup' ? 'checked' : '' }}> Pick-up</label>
+                        <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="fulfillment_type" value="dine-in" {{ old('fulfillment_type') === 'dine-in' ? 'checked' : '' }}> Dine-in</label>
+                    </div>
+                </div>
+            <div style="height:1px;background:#eee;margin:16px 0;"></div>
+            <h2 style="color:#4A2C2A; margin:0 0 8px;">Apply for a Discount?</h2>
             <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
                 <div class="toggle-switch" id="discount-toggle">
                     <div class="toggle-circle"></div>
                 </div>
-                <span class="toggle-label">Apply for PWD/Senior Citizen Discount</span>
+                <span class="toggle-label">PWD/Senior Citizen Discount</span>
                 <input type="hidden" name="apply_discount" id="apply-discount" value="{{ old('apply_discount', 0) }}">
             </div>
             <div class="form-group" id="discount-upload" style="display: none;">
@@ -116,7 +131,7 @@
     </div>
 </div>
 
-<script>
+        <script>
     document.addEventListener('DOMContentLoaded', function () {
         const discountToggle = document.getElementById('discount-toggle');
         const discountUpload = document.getElementById('discount-upload');
@@ -124,12 +139,23 @@
         const placeOrderBtn = document.getElementById('place-order-btn');
         const fileError = document.getElementById('file-error');
         const applyDiscountInput = document.getElementById('apply-discount');
+        const shippingFields = document.getElementById('shipping-fields');
+        const fulfillmentRadios = document.querySelectorAll('input[name="fulfillment_type"]');
 
-        // initialize state from old input (if any)
+        function updateShippingVisibility() {
+            shippingFields.style.visibility = 'visible';
+            shippingFields.style.opacity = '1';
+            shippingFields.style.pointerEvents = 'auto';
+        }
+
+        updateShippingVisibility();
+
+        fulfillmentRadios.forEach(r => r.addEventListener('change', updateShippingVisibility));
+
         if (applyDiscountInput && applyDiscountInput.value === '1') {
             discountToggle.classList.add('active');
             discountUpload.style.display = 'block';
-            placeOrderBtn.disabled = true; // require valid upload before enabling
+            placeOrderBtn.disabled = true;
         }
 
         discountToggle.addEventListener('click', function () {

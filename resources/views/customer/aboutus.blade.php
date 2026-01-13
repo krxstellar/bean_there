@@ -109,6 +109,20 @@
             
             {{-- DYNAMIC LINK TO THE PASTRIES MENU --}}
             <a href="{{ route('menu.pastries') }}" class="browse-btn">Browse Our Products</a>
+
+            @php
+                $settings = cache('admin.settings', [
+                    'store_address' => 'Quezon City, Metro Manila',
+                    'hours_weekdays' => '8:00 AM - 7:00 PM',
+                    'hours_weekend' => '9:00 AM - 5:00 PM',
+                ]);
+            @endphp
+
+            <div style="border-radius:16px; padding:20px; margin-top:20px; box-shadow:0 6px 18px rgba(74,44,42,0.06); border:2px solid rgba(74,44,42,0.06);">
+                <p style="margin:6px 0; color:#5a4a48; font-size:0.95rem;"><strong>Location:</strong> {{ $settings['store_address'] }}</p>
+                <p style="margin:6px 0; color:#5a4a48; font-size:0.95rem;"><strong>Weekdays:</strong> {{ $settings['hours_weekdays'] }}</p>
+                <p style="margin:6px 0 0 0; color:#5a4a48; font-size:0.95rem;"><strong>Weekends:</strong> {{ $settings['hours_weekend'] }}</p>
+            </div>
         </div>
     </div>
 </div>

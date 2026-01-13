@@ -632,15 +632,17 @@
         });
     </script>
 
+    @php $settings = cache('admin.settings', []); @endphp
+
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-column contact">
                 <h3>CONTACT US</h3>
                 <p>Call us today at</p>
-                <p><strong>+0123456789</strong></p>
+                <p><strong>{{ $settings['contact_number'] ?? '0987 654 3210' }}</strong></p>
                 <div style="height: 15px;"></div>
                 <p>or send a message to</p>
-                <p><strong>support@local.com</strong></p>
+                <p><strong>{{ $settings['email'] ?? 'support@beanthere.com' }}</strong></p>
             </div>
             <div class="footer-divider"></div>
             <div class="footer-column links">
