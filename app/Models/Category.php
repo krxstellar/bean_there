@@ -16,13 +16,11 @@ class Category extends Model
         'description',
     ];
 
-    // HAS MANY SUBCATEGORIES
     public function subcategories(): HasMany
     {
         return $this->hasMany(Subcategory::class);
     }
 
-    // HAS MANY PRODUCTS (DIRECT)
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

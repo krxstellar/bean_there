@@ -81,7 +81,6 @@
         </div>
     </div>
 </div>
-<!-- Delete Confirmation Modal -->
 <div class="modal-overlay" id="delete-product-overlay" style="display: none;">
     <div class="modal-container">
         <div class="modal-header">

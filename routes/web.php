@@ -66,7 +66,7 @@ Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add')
 Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
 
-// CHECKOUT FLOW ROUTES (PROTECTED - REQUIRES LOGIN)
+// CHECKOUT FLOW ROUTES
 Route::middleware('auth')->group(function () {
     Route::get('/shipping', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
@@ -76,15 +76,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
 
-// Receipt download route (for customers and admins)
+// Receipt download route for customers and admins
 Route::get('/receipts/{payment}', [App\Http\Controllers\ReceiptController::class, 'download'])
     ->name('receipts.download')
     ->middleware('auth');
 
-// PRODUCT DETAIL (CUSTOMER)
+// PRODUCT DETAIL CUSTOMER
 Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
-// STAFF INTERFACE ROUTES (PROTECTED BY STAFF ROLE)
+// STAFF INTERFACE ROUTES
 Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/test-staff', [StaffDashboardController::class, 'index'])->name('staff.dashboard');
 
@@ -99,7 +99,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/staff/catalog', [StaffProductController::class, 'index'])->name('staff.catalog');
     Route::post('/staff/products/{product}/notify-low-stock', [StaffProductController::class, 'notifyLowStock'])->name('staff.products.notifyLowStock');
 
-    // STAFF SETTINGS (mirror admin settings behavior)
+    // STAFF SETTINGS
     Route::get('/staff/settings', function () {
         $settings = cache('admin.settings', [
             'email' => 'support@beanthere.com',
@@ -127,7 +127,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     })->name('staff.settings.update');
 });
 
-// ADMIN MANAGEMENT ROUTES (PROTECTED BY ADMIN ROLE)
+// ADMIN MANAGEMENT ROUTES 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/test-admin', function () {
         $todaySales = Order::whereDate('placed_at', now()->toDateString())
@@ -160,7 +160,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/users', [AdminUsersController::class, 'index'])->name('admin.users');
     Route::post('/admin/users', [AdminUsersController::class, 'store'])->name('admin.users.store');
-    // JSON endpoint used by the admin users page to populate the edit modal
     Route::get('/admin/users/{user}', [AdminUsersController::class, 'show'])->name('admin.users.show');
     Route::patch('/admin/users/{user}', [AdminUsersController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.destroy');
@@ -216,7 +215,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return redirect()->route('admin.settings')->with('status', 'Password changed.');
     })->name('admin.settings.change_password');
 
-    // ADMIN PRODUCTS CRUD (INDEX HANDLED BY ADMIN.CATALOG ROUTE ABOVE)
+    // ADMIN PRODUCTS CRUD 
     Route::prefix('admin')->group(function () {
         Route::resource('products', AdminProductController::class)->except(['index'])->names([
             'create' => 'admin.products.create',

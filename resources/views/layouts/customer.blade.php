@@ -519,7 +519,6 @@
         </script>
     @endif
 
-    <!-- Login Required Modal -->
     <div id="login-modal-overlay" class="login-modal-overlay" style="display: none;">
         <div class="login-modal">
             <div class="login-modal-header">
@@ -611,7 +610,6 @@
             document.getElementById('login-modal-message').textContent = messages[type] || messages['orders'];
             const overlay = document.getElementById('login-modal-overlay');
             overlay.style.display = 'flex';
-            // Trigger reflow for animation
             overlay.offsetHeight;
             overlay.classList.add('show');
         }
@@ -707,7 +705,6 @@
                 if (e.key === 'Enter') executeGlobalSearch();
             });
 
-            // LIVE FILTERING FOR MENU PAGES
             navSearchInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase().trim();
                 const productCards = document.querySelectorAll('.product-card');
@@ -742,7 +739,6 @@
                 }
             });
 
-            // POPUP AUTO-FADE
             if (popup) {
                 setTimeout(() => {
                     popup.classList.add('fade-out');
@@ -750,7 +746,6 @@
                 }, 3000); 
             }
 
-            // HANDLE SEARCH FROM URL
             const urlParams = new URLSearchParams(window.location.search);
             const searchQuery = urlParams.get('search');
             if (searchQuery) {
@@ -761,10 +756,8 @@
         });
     </script>
     <script>
-        // Quantity plus/minus handlers for add-to-cart forms
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('qty-increment') || e.target.classList.contains('qty-decrement')) {
-                // find the closest form and its .qty-input
                 const form = e.target.closest('form');
                 const input = form ? form.querySelector('.qty-input') : e.target.parentElement.querySelector('.qty-input');
                 if (!input) return;
@@ -777,12 +770,10 @@
                     value = Math.max(min, value - step);
                 }
                 input.value = value;
-                // trigger input event in case other listeners rely on it
                 input.dispatchEvent(new Event('input'));
             }
         });
 
-        // Ensure manual edits respect min
         document.addEventListener('input', function(e) {
             if (e.target.classList && e.target.classList.contains('qty-input')) {
                 const min = parseInt(e.target.getAttribute('min')) || 1;

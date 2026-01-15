@@ -48,7 +48,6 @@ class AdminNotificationsController extends Controller
         $data = $notification->data;
         $orderId = $data['order_id'] ?? null;
 
-        // delete the notification so it doesn't pile up
         $notification->delete();
 
         if ($orderId) {

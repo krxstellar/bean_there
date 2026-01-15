@@ -12,7 +12,6 @@ class ProductController extends Controller
     {
         $category = Category::where('slug', $slug)->first();
         
-        // GET SUBCATEGORIES WITH THEIR PRODUCTS
         $subcategories = $category 
             ? Subcategory::where('category_id', $category->id)
                 ->with(['products' => function ($query) {

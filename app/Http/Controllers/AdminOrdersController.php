@@ -41,11 +41,10 @@ class AdminOrdersController extends Controller
         $newStatus = $validated['status'];
         $oldStatus = $order->status;
 
-        // Update status; when marking completed, create a Payment record (payments are the source of truth).
+        // Update status; when marking completed, create a Payment record 
         $order->status = $newStatus;
 
         if ($newStatus === 'completed') {
-            // create payment record if none exists for this order
             if (!$order->payments()->where('status', 'paid')->exists()) {
                 $amount = ($order->discount_status ?? '') === 'approved'
                     ? $order->total_after_discount
@@ -63,7 +62,7 @@ class AdminOrdersController extends Controller
             }
         }
 
-        // If status was completed but is being changed away, remove payment record(s).
+        // If status was completed but is being changed away, remove payment record
         if ($oldStatus === 'completed' && $newStatus !== 'completed') {
             $order->payments()->where('status', 'paid')->delete();
         }

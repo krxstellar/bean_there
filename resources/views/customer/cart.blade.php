@@ -413,19 +413,16 @@
             }
         }
 
-        // COPY INSTRUCTIONS TO HIDDEN INPUT BEFORE FORM SUBMIT
         document.getElementById('checkout-form').addEventListener('submit', function(e) {
             e.preventDefault();
             instructionsInput.value = instructionsTextarea.value;
             this.submit();
         });
 
-        // LISTEN FOR CHECKBOX CHANGES
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', updateCartState);
         });
 
-        // INITIALIZE CART STATE ON PAGE LOAD
         updateCartState();
 
         // LISTEN FOR QUANTITY BUTTON CLICKS

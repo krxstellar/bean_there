@@ -33,7 +33,6 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            // LOAD CART FROM DATABASE AND MERGE WITH SESSION CART
             CartController::loadCartFromDatabase($user->id);
 
             return redirect()->intended($this->redirectForRole($user))->with('success', 'Logged in successfully.');
@@ -67,7 +66,6 @@ class AuthController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // SYNC SESSION CART TO DATABASE FOR NEW USER
         CartController::loadCartFromDatabase($user->id);
 
         return redirect($this->redirectForRole($user))->with('success', 'Account created and logged in.');
@@ -81,7 +79,6 @@ class AuthController extends Controller
         return redirect('/')->with('success', 'Logged out successfully.');
     }
 
-    // DETERMINE REDIRECT DESTINATION BASED ON ROLE
     private function redirectForRole(User $user): string
     {
         return match (true) {

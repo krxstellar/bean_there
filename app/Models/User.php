@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// USE ILLUMINATE\CONTRACTS\AUTH\MUSTVERIFYEMAIL;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,28 +13,23 @@ use App\Models\Staff;
 
 class User extends Authenticatable
 {
-    // @USE HASFACTORY<\DATABASE\FACTORIES\USERFACTORY>
     use HasFactory, Notifiable, HasRoles;
 
-    // THE ATTRIBUTES THAT ARE MASS ASSIGNABLE
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    // THE ATTRIBUTES THAT SHOULD BE HIDDEN FOR SERIALIZATION
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // THE ATTRIBUTES THAT SHOULD BE CAST
     protected $casts = [
         'password' => 'hashed',
     ];
 
-    // APPENDED ACCESSORS FOR ARRAYS/JSON
     protected $appends = [
         'role_name',
     ];

@@ -11,7 +11,7 @@ class AdminPaymentsController extends Controller
 {
     public function index(Request $request)
     {
-        // Use Payment model (only paid ones) to render transactions.
+        // Use Payment model to render transactions.
         $payments = Payment::with(['order.user'])
             ->where('status', 'paid')
             ->orderByDesc('paid_at')

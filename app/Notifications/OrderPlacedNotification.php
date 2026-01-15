@@ -14,7 +14,7 @@ class OrderPlacedNotification extends Notification
     protected Order $order;
 
     /**
-     * Return a unique key for this notification (used by MailChannel).
+     * Return a unique key for this notification
      *
      * @return string
      */
@@ -53,7 +53,7 @@ class OrderPlacedNotification extends Notification
         try {
             $mail->action('View order', route('admin.orders.show', ['order' => $this->order->id]));
         } catch (\Throwable $e) {
-            // ignore if route not available
+            
         }
 
         return $mail;

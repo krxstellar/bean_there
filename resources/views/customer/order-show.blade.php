@@ -225,7 +225,6 @@
 
     <div class="order-detail-grid">
         <div class="order-main">
-            <!-- Order Information -->
             <div class="detail-card">
                 <h2 class="detail-card-title">Order Information</h2>
                 <div class="order-meta">
@@ -242,7 +241,6 @@
                 </div>
             </div>
 
-            <!-- Order Items -->
             <div class="detail-card">
                 <h2 class="detail-card-title">Order Items</h2>
                 <table class="items-table">
@@ -271,7 +269,6 @@
                 </table>
             </div>
 
-            <!-- Shipping Address -->
             @if($order->shippingAddress)
                 <div class="detail-card">
                     <h2 class="detail-card-title">Shipping Address</h2>
@@ -297,7 +294,6 @@
             @endif
         </div>
 
-        <!-- Order Summary Sidebar -->
         <div class="order-sidebar">
             <div class="detail-card">
                 <h2 class="detail-card-title">Order Summary</h2>

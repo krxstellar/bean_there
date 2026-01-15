@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // RUN THE MIGRATIONS.
     public function up(): void
     {
         Schema::create('cart_items', function (Blueprint $table) {
@@ -20,7 +19,6 @@ return new class extends Migration
         });
     }
 
-    // REVERSE THE MIGRATIONS.
     public function down(): void
     {
         Schema::dropIfExists('cart_items');

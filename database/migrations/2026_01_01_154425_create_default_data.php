@@ -10,7 +10,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // CREATE DEFAULT CATEGORIES
         Category::firstOrCreate(
             ['slug' => 'pastries'],
             ['name' => 'Pastries']
@@ -24,10 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // DELETE DEFAULT CATEGORIES ON ROLLBACK
         Category::where('slug', 'pastries')->delete();
         Category::where('slug', 'drinks')->delete();
-
-        // No user deletion here — account creation was moved to a seeder.
     }
 };

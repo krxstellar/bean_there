@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('admin-content')
-<!-- Modal Overlay with Blur -->
 <div class="modal-overlay" id="create-product-overlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -52,10 +51,12 @@
                     <button type="button" class="add-subcategory-btn" onclick="showNewSubcategoryForm()" title="Create New Subcategory">
                         <i class="fa-solid fa-plus"></i>
                     </button>
+                    <button type="button" class="delete-subcategory-btn" onclick="confirmDeleteSubcategory()" title="Delete Selected Subcategory" disabled>
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
                 @error('subcategory_id')<div class="error-msg">{{ $message }}</div>@enderror
                 
-                <!-- Inline New Subcategory Form -->
                 <div id="new-subcategory-form" class="new-subcategory-form" style="display: none;">
                     <div class="new-subcat-header">
                         <span><i class="fa-solid fa-folder-plus"></i> New Subcategory</span>
@@ -67,6 +68,20 @@
                     </button>
                     <div id="subcat-error" class="error-msg" style="display: none;"></div>
                     <div id="subcat-success" class="success-msg" style="display: none;"></div>
+                </div>
+
+                <div id="delete-confirm-modal" class="delete-confirm-overlay" style="display: none;">
+                    <div class="delete-confirm-box">
+                        <div class="delete-confirm-header">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #E74C3C; margin-right:8px"></i>
+                            <strong>Confirm Delete</strong>
+                        </div>
+                        <p id="delete-confirm-text">Are you sure you want to delete this subcategory?</p>
+                        <div class="delete-confirm-actions">
+                            <button type="button" id="delete-cancel-btn" class="btn-cancel">Cancel</button>
+                            <button type="button" id="delete-confirm-btn" class="btn-delete">Delete</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -326,7 +341,6 @@
         color: #4A2C2A;
     }
 
-    /* Subcategory with Add Button */
     .subcategory-wrapper {
         display: flex;
         gap: 8px;
@@ -356,7 +370,87 @@
         transform: scale(1.05);
     }
 
-    /* New Subcategory Inline Form */
+    .delete-subcategory-btn {
+        background: #E74C3C;
+        color: white;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .delete-subcategory-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .delete-subcategory-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .delete-confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    }
+
+    .delete-confirm-box {
+        background: white;
+        border-radius: 12px;
+        padding: 18px 20px;
+        width: 360px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        text-align: left;
+    }
+
+    .delete-confirm-header {
+        display:flex;
+        align-items:center;
+        margin-bottom: 8px;
+        font-size: 15px;
+        color: #4A2C2A;
+    }
+
+    .delete-confirm-box p {
+        color: #666;
+        margin: 8px 0 14px 0;
+        font-size: 14px;
+    }
+
+    .delete-confirm-actions {
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
+    }
+
+    .btn-cancel {
+        background: #F0F2F5;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #4A2C2A;
+    }
+
+    .btn-delete {
+        background: #E74C3C;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
     .new-subcategory-form {
         margin-top: 12px;
         padding: 15px;
@@ -526,7 +620,6 @@
     categorySelect.addEventListener('change', filterSubcategories);
     filterSubcategories();
 
-    // NEW SUBCATEGORY FUNCTIONS
     function showNewSubcategoryForm() {
         document.getElementById('new-subcategory-form').style.display = 'block';
         document.getElementById('new_subcategory_name').focus();
@@ -545,7 +638,6 @@
         const errorDiv = document.getElementById('subcat-error');
         const successDiv = document.getElementById('subcat-success');
 
-        // Reset messages
         errorDiv.style.display = 'none';
         successDiv.style.display = 'none';
 
@@ -555,7 +647,6 @@
             return;
         }
 
-        // Send AJAX request to create subcategory
         fetch('{{ route("admin.subcategories.store") }}', {
             method: 'POST',
             headers: {
@@ -571,17 +662,14 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Add new option to dropdown
                 const newOption = document.createElement('option');
                 newOption.value = data.subcategory.id;
                 newOption.textContent = data.subcategory.name;
                 newOption.dataset.category = categoryId;
                 subcategorySelect.appendChild(newOption);
                 
-                // Select the new subcategory
                 subcategorySelect.value = data.subcategory.id;
                 
-                // Show success & hide form
                 successDiv.textContent = '✓ Subcategory created!';
                 successDiv.style.display = 'block';
                 
@@ -599,7 +687,73 @@
         });
     }
 
-    // Allow Enter key to submit new subcategory
+    // ENABLE/DISABLE DELETE BUTTON BASED ON SELECTION
+    const deleteBtn = document.querySelector('.delete-subcategory-btn');
+    function updateDeleteButtonState() {
+        if (!deleteBtn) return;
+        deleteBtn.disabled = !subcategorySelect.value;
+    }
+
+    subcategorySelect.addEventListener('change', updateDeleteButtonState);
+    updateDeleteButtonState();
+
+    function confirmDeleteSubcategory() {
+        const selected = subcategorySelect.value;
+        if (!selected) return;
+        const opt = subcategorySelect.querySelector('option[value="' + selected + '"]');
+        const name = opt ? opt.textContent : 'this subcategory';
+        document.getElementById('delete-confirm-text').textContent = `Are you sure you want to delete "${name}"? This action cannot be undone.`;
+        document.getElementById('delete-confirm-modal').style.display = 'flex';
+        document.getElementById('delete-confirm-btn').dataset.deleteId = selected;
+    }
+
+    document.getElementById('delete-cancel-btn').addEventListener('click', () => {
+        document.getElementById('delete-confirm-modal').style.display = 'none';
+        document.getElementById('delete-confirm-btn').dataset.deleteId = '';
+    });
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', () => {
+        const id = document.getElementById('delete-confirm-btn').dataset.deleteId;
+        if (id) {
+            document.getElementById('delete-confirm-modal').style.display = 'none';
+            deleteSubcategory(id);
+        }
+    });
+
+    function deleteSubcategory(id) {
+        const errorDiv = document.getElementById('subcat-error');
+        const successDiv = document.getElementById('subcat-success');
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        fetch('{{ url("admin/subcategories") }}' + '/' + id, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+                const opt = subcategorySelect.querySelector('option[value="' + id + '"]');
+                if (opt) opt.remove();
+                subcategorySelect.value = '';
+                updateDeleteButtonState();
+                successDiv.textContent = '✓ Subcategory deleted.';
+                successDiv.style.display = 'block';
+                setTimeout(() => { successDiv.style.display = 'none'; }, 2000);
+            } else {
+                errorDiv.textContent = data.message || 'Failed to delete subcategory.';
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(() => {
+            errorDiv.textContent = 'Error deleting subcategory.';
+            errorDiv.style.display = 'block';
+        });
+    }
+
     document.getElementById('new_subcategory_name').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -607,7 +761,6 @@
         }
     });
 
-    // CLOSE ON ESCAPE KEY
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             if (document.getElementById('new-subcategory-form').style.display === 'block') {
@@ -618,14 +771,12 @@
         }
     });
 
-    // CLOSE ON OVERLAY CLICK
     document.getElementById('create-product-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'create-product-overlay') {
             window.location.href = '{{ route("admin.catalog") }}';
         }
     });
 
-    // PREVENT DASH ('-') IN PRICE INPUT
     const priceInput = document.getElementById('price');
     if (priceInput) {
         priceInput.addEventListener('keydown', (e) => {
@@ -634,13 +785,11 @@
             }
         });
 
-        // Sanitize any existing or programmatic input to remove '-'
         priceInput.addEventListener('input', (e) => {
             const sanitized = e.target.value.replace(/-/g, '');
             if (sanitized !== e.target.value) e.target.value = sanitized;
         });
 
-        // Block pasting '-' and sanitize pasted text
         priceInput.addEventListener('paste', (e) => {
             const paste = (e.clipboardData || window.clipboardData).getData('text');
             if (paste.includes('-')) {

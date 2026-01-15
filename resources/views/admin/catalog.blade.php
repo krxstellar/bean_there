@@ -75,7 +75,6 @@
     </div>
 
     <style>
-        /* CARD STYLES */
         .product-card {
             background: #FFFFFF;
             border: 1.5px solid #F0F2F5;

@@ -62,7 +62,6 @@
         </div>
     </form>
     
-    <!-- Change Password Modal -->
     <div id="changePasswordModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:1200;">
         <div style="width:420px; background:white; border-radius:12px; padding:22px; box-shadow:0 8px 30px rgba(0,0,0,0.15); font-family:Poppins, sans-serif;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">

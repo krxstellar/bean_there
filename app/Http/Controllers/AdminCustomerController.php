@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class AdminCustomerController extends Controller
 {
-    /**
-     * Display a listing of customers with order stats.
-     */
     public function index(Request $request)
     {
         $customers = User::withCount('orders')

@@ -166,7 +166,6 @@
         }
         function closeUserModal() { document.getElementById('userModal').style.display = 'none'; }
         
-        // Edit modal helpers
         function openEditModal(id) {
             fetch('/admin/users/' + id)
                 .then(function(res){ if (!res.ok) throw res; return res.json(); })
@@ -194,7 +193,6 @@
 
         function closeDeleteModal() { document.getElementById('deleteUserModal').style.display = 'none'; }
 
-        // Client-side validation for add-staff form
         document.addEventListener('DOMContentLoaded', function(){
             var form = document.getElementById('createUserForm');
             if (!form) return;

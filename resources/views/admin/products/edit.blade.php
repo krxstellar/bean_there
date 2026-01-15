@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('admin-content')
-<!-- Modal Overlay with Blur -->
 <div class="modal-overlay" id="edit-product-overlay">
     <div class="modal-container">
         <div class="modal-header">
@@ -56,7 +55,6 @@
                 </div>
                 @error('subcategory_id')<div class="error-msg">{{ $message }}</div>@enderror
 
-                <!-- Inline New Subcategory Form -->
                 <div id="new-subcategory-form" class="new-subcategory-form" style="display: none;">
                     <div class="new-subcat-header">
                         <span><i class="fa-solid fa-folder-plus"></i> New Subcategory</span>
@@ -113,7 +111,6 @@
 </div>
 
 <style>
-    /* reuse modal styles from create view to keep consistent UI */
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display:flex; justify-content:center; align-items:center; z-index:9999; }
     .modal-container { background:#FFFFFF; border-radius:25px; padding:35px 40px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto; font-family:'Poppins',sans-serif; color:#4A2C2A; box-shadow:0 25px 80px rgba(0,0,0,0.25); }
     .modal-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:25px; }
@@ -178,7 +175,7 @@
         errDiv.style.display = 'none'; errDiv.textContent = '';
 
         if (file && file.type.startsWith('image/')) {
-            const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+            const MAX_BYTES = 5 * 1024 * 1024; 
             if (file.size > MAX_BYTES) {
                 imagePreview.style.display = 'none'; uploadText.textContent = 'Click to upload or drag image'; imageInput.value = ''; errDiv.textContent = 'File is too large. Maximum size is 5 MB.'; errDiv.style.display = 'block'; return;
             }
@@ -189,7 +186,6 @@
         }
     }
 
-        // FILTER SUBCATEGORIES BASED ON SELECTED CATEGORY
         const categorySelect = document.getElementById('category_id');
         const subcategorySelect = document.getElementById('subcategory_id');
         const subcategoryOptions = subcategorySelect ? subcategorySelect.querySelectorAll('option[data-category]') : [];
@@ -199,7 +195,6 @@
             const selectedCategory = categorySelect.value;
             if (!subcategorySelect) return;
 
-            // Preserve current selection when it belongs to the selected category
             const currentVal = subcategorySelect.value;
             let currentStillValid = false;
 
@@ -215,11 +210,8 @@
             if (currentStillValid) {
                 subcategorySelect.value = currentVal;
             } else {
-                // If previously selected subcategory doesn't match, try to keep any old() value
-                // otherwise pick the first visible option or clear selection.
                 const firstVisible = Array.from(subcategoryOptions).find(o => o.dataset.category === selectedCategory);
                 if (firstVisible) {
-                    // only change selection to first visible if there's no prefilled value
                     if (!currentVal) subcategorySelect.value = firstVisible.value;
                 } else {
                     subcategorySelect.value = '';
@@ -229,7 +221,6 @@
 
         if (categorySelect) { categorySelect.addEventListener('change', filterSubcategories); filterSubcategories(); }
 
-    // NEW SUBCATEGORY FUNCTIONS (AJAX)
     function showNewSubcategoryForm() { document.getElementById('new-subcategory-form').style.display = 'block'; document.getElementById('new_subcategory_name').focus(); }
     function hideNewSubcategoryForm() { document.getElementById('new-subcategory-form').style.display = 'none'; document.getElementById('new_subcategory_name').value = ''; document.getElementById('subcat-error').style.display = 'none'; document.getElementById('subcat-success').style.display = 'none'; }
 
@@ -258,7 +249,6 @@
 
     document.getElementById('new_subcategory_name')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); createSubcategory(); } });
 
-    // PREVENT DASH ('-') IN PRICE INPUT
     const priceInput = document.getElementById('price');
     if (priceInput) {
         priceInput.addEventListener('keydown', (e) => { if (e.key === '-' || e.key === 'Subtract' || e.keyCode === 189 || e.keyCode === 109) e.preventDefault(); });

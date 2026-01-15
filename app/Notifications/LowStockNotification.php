@@ -13,7 +13,7 @@ class LowStockNotification extends Notification
     use Queueable;
 
     /**
-     * Return a unique key for this notification (used by MailChannel).
+     * Return a unique key for this notification
      *
      * @return string
      */
@@ -55,7 +55,7 @@ class LowStockNotification extends Notification
         try {
             $mail->action('View product', route('admin.products.show', ['product' => $this->product->id]));
         } catch (\Throwable $e) {
-            // ignore if route not available
+
         }
 
         $mail->line('Please review inventory and restock if needed.');

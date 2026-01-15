@@ -32,7 +32,6 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        // ENSURE THE AUTHENTICATED USER OWNS THIS ORDER
         if ($order->user_id !== auth()->id()) {
             abort(403, 'Unauthorized');
         }
@@ -49,7 +48,6 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Please select items to checkout.');
         }
 
-        // STORE SELECTED ITEMS AND INSTRUCTIONS IN SESSION FOR THE STORE METHOD
         session()->put('checkout_items', $selectedItems);
         session()->put('checkout_instructions', $instructions);
 
@@ -76,13 +74,11 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // HANDLE DISCOUNT PROOF UPLOAD
         $proofPath = null;
         if ($request->hasFile('discount_proof')) {
             $proofPath = $request->file('discount_proof')->store('discount_proofs', 'public');
         }
 
-        // GET SELECTED ITEMS FROM SESSION
         $selectedItems = session('checkout_items', '');
         $selectedIds = array_filter(explode(',', $selectedItems));
 
@@ -95,7 +91,6 @@ class OrderController extends Controller
         $checkedOutIds = [];
 
         foreach ($cart as $id => $item) {
-            // ONLY PROCESS SELECTED ITEMS
             if (!in_array($id, $selectedIds)) {
                 continue;
             }
@@ -119,7 +114,6 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'No valid items in cart.');
         }
 
-        // GET INSTRUCTIONS FROM SESSION
         $instructions = session()->get('checkout_instructions', '');
 
         $order = null;
@@ -133,7 +127,7 @@ class OrderController extends Controller
                 'fulfillment_type' => $request->input('fulfillment_type', 'delivery'),
                 'instructions' => $instructions,
                 'placed_at' => now(),
-                'discount_proof' => $proofPath ?? null, // Store the discount proof path
+                'discount_proof' => $proofPath ?? null, 
                 'discount_status' => isset($proofPath) ? 'pending' : 'none',
             ]);
 
@@ -156,7 +150,7 @@ class OrderController extends Controller
             ]);
         });
 
-        // Notify admin(s) about the new order
+        // Notify admin about the new order
         try {
             $admins = User::role('admin')->get();
             if ($admins->isNotEmpty()) {
@@ -176,7 +170,6 @@ class OrderController extends Controller
             session(['cart' => $remainingCart]);
         }
 
-        // REMOVE PERSISTED CART ITEMS FOR LOGGED-IN USER THAT WERE CHECKED OUT
         if (auth()->check() && !empty($checkedOutIds)) {
             CartItem::where('user_id', auth()->id())->whereIn('product_id', $checkedOutIds)->delete();
         }

@@ -18,13 +18,11 @@ class Subcategory extends Model
         'description',
     ];
 
-    // BELONGS TO A MAIN CATEGORY (PASTRIES OR DRINKS)
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    // HAS MANY PRODUCTS
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

@@ -26,13 +26,11 @@ class Product extends Model
         'is_active' => 'boolean',
     ];
 
-    // BELONGS TO MAIN CATEGORY (PASTRIES OR DRINKS)
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    // BELONGS TO SUBCATEGORY
     public function subcategory(): BelongsTo
     {
         return $this->belongsTo(Subcategory::class);
