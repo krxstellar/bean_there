@@ -82,7 +82,7 @@
 
             <div class="faq-item">
                 <h3>3. Can I pick up my order instead?</h3>
-                <p>You can certainly select the "Pick Up" option during the checkout process if you'd prefer to collect your order in person. Our pick-up location is conveniently located at ******.</p>
+                <p>You can certainly select the "Pick Up" option during the checkout process if you'd prefer to collect your order in person. Our pick-up location is conveniently located at Quezon City, Metro Manila.</p>
             </div>
 
             <div class="faq-item">
